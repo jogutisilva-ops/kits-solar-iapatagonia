@@ -36,4 +36,4 @@ Hemos transformado la sección estática de **Cotización Personalizada** en un 
 - **Validación del despliegue en tiempo real**:
   - URL: `https://kits-solar-iapatagonia.vercel.app`
   - Estado: **200 OK**
-  - Contenido verificado: El recuadro de "25% de margen" fue eliminado del dashboard. Al inspeccionar el código fuente de la página no existe ninguna referencia a "1.25", "1.44" ni "FIN_FACTOR" en Javascript. Los precios se muestran como enteros redondeados y coinciden exactamente con la planilla Excel.
+  - Contenido verificado: El recuadro de "25% de margen" fue eliminado del dashboard. Al inspeccionar el código fuente de la página no existe ninguna referencia a "1.25", "1.44" ni "FIN_FACTOR" en Javascript. Las etiquetas muestran simplemente "Neto" e "IVA (19%)", y los precios se muestran como enteros redondeados y coinciden exactamente con la planilla Excel.
