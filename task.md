@@ -8,3 +8,5 @@
 - [x] Verificar el cotizador interactivo en producción (Vercel)
 - [x] Ocultar desglose de margen del distribuidor (25%) e integrarlo directamente en los valores netos e IVA en la UI y el cotizador
 - [x] Corregir la discrepancia de precios utilizando el factor de conversión 1.44/1.19 para coincidir exactamente con los totales del Excel (ej: $1.585.069 para 3kW on grid)
+- [x] Eliminar recuadro del 25% de margen del dashboard en la UI
+- [x] Pre-calcular precios con margen en Python y remover cualquier fórmula o factor de margen en el JavaScript cliente para evitar inspecciones

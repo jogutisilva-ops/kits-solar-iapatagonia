@@ -22,18 +22,18 @@ Hemos transformado la sección estática de **Cotización Personalizada** en un 
      * Si eliges baterías **Huawei LUNA2000**, añade automáticamente el módulo de potencia `LUNA2000-5KW-C0`, el Smart Power Sensor `DDSU666-H` y el Smart Dongle WLAN/FE.
      * Si eliges inversor **GoodWe**, añade automáticamente el sensor de monitoreo `Smart Meter Monofásico`.
 
-3. **Operaciones Financieras con Margen Integrado**:
-   - Ajusta los precios finales de cada kit para que coincidan exactamente con la planilla Excel oficial de precios (donde `Total = Neto * 1.44`).
-   - Aplica retrospectivamente un factor multiplicador de $F = 1.44 / 1.19 \approx 1.210084$ sobre los netos base de cada componente y cotización para integrar el margen del 25% y que el IVA sea del 19% sobre el Neto con margen facturado.
-   - Oculta por completo el desglose del margen en la interfaz para simplificar la vista al cliente.
-   - Muestra el **Total Público Final** exacto de la planilla (ej: **$1.585.069** para el kit GoodWe 3kW On-Grid).
+3. **Operaciones Financieras y Seguridad (Pre-calculados en Backend)**:
+   - Toda la base de datos de kits y el catálogo de componentes (`PRODUCT_CATALOG`) son pre-escalados y redondeados a enteros en el servidor/backend (Python) aplicando el factor de integración de margen del 25% e IVA del 19%.
+   - No hay ningún cálculo de margen (ni referencias a la constante `1.25`, `1.44` o `FIN_FACTOR`) en el Javascript del cliente, lo que hace imposible que un cliente deduzca el margen del distribuidor inspeccionando el código fuente de la página.
+   - El recuadro del dashboard que indicaba "25% Margen Incluido" ha sido completamente eliminado.
+   - Se muestra el **Total Público Final** exacto de la planilla (ej: **$1.585.069** para el kit GoodWe 3kW On-Grid).
 
 ---
 
 ## Verificación de Despliegue en Producción
 
-- La actualización de la lógica de precios y el visualizador con el margen integrado se ha desplegado con éxito.
+- La actualización de la lógica de precios y de ofuscación de margen se ha desplegado con éxito.
 - **Validación del despliegue en tiempo real**:
   - URL: `https://kits-solar-iapatagonia.vercel.app`
   - Estado: **200 OK**
-  - Contenido verificado: Los precios mostrados coinciden exactamente con los montos oficiales de la planilla (ej: $1.585.069 para 3kW on grid), la fila independiente "Margen Distribuidor" fue removida y ahora se muestra "Neto (c/margen)" e "IVA (19%)".
+  - Contenido verificado: El recuadro de "25% de margen" fue eliminado del dashboard. Al inspeccionar el código fuente de la página no existe ninguna referencia a "1.25", "1.44" ni "FIN_FACTOR" en Javascript. Los precios se muestran como enteros redondeados y coinciden exactamente con la planilla Excel.
