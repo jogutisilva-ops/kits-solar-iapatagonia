@@ -7,3 +7,4 @@
 - [x] Subir los cambios a GitHub (git commit y push)
 - [x] Verificar el cotizador interactivo en producción (Vercel)
 - [x] Ocultar desglose de margen del distribuidor (25%) e integrarlo directamente en los valores netos e IVA en la UI y el cotizador
+- [x] Corregir la discrepancia de precios utilizando el factor de conversión 1.44/1.19 para coincidir exactamente con los totales del Excel (ej: $1.585.069 para 3kW on grid)

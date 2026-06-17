@@ -23,17 +23,17 @@ Hemos transformado la sección estática de **Cotización Personalizada** en un 
      * Si eliges inversor **GoodWe**, añade automáticamente el sensor de monitoreo `Smart Meter Monofásico`.
 
 3. **Operaciones Financieras con Margen Integrado**:
-   - Aplica el **Margen de Distribuidor (25%)** directamente sobre los precios unitarios netos y subtotales de los materiales.
+   - Ajusta los precios finales de cada kit para que coincidan exactamente con la planilla Excel oficial de precios (donde `Total = Neto * 1.44`).
+   - Aplica retrospectivamente un factor multiplicador de $F = 1.44 / 1.19 \approx 1.210084$ sobre los netos base de cada componente y cotización para integrar el margen del 25% y que el IVA sea del 19% sobre el Neto con margen facturado.
    - Oculta por completo el desglose del margen en la interfaz para simplificar la vista al cliente.
-   - Calcula el **IVA (19%)** sobre el valor neto con margen ya incorporado.
-   - Muestra el **Total Público Final** (Neto con margen + IVA) formateado en pesos chilenos (`es-CL`).
+   - Muestra el **Total Público Final** exacto de la planilla (ej: **$1.585.069** para el kit GoodWe 3kW On-Grid).
 
 ---
 
 ## Verificación de Despliegue en Producción
 
-- La actualización del cotizador y la visualización de los kits con margen integrado se ha desplegado con éxito.
+- La actualización de la lógica de precios y el visualizador con el margen integrado se ha desplegado con éxito.
 - **Validación del despliegue en tiempo real**:
   - URL: `https://kits-solar-iapatagonia.vercel.app`
   - Estado: **200 OK**
-  - Contenido verificado: La fila independiente "Margen Distribuidor" fue removida de todas las tarjetas de kits, del modal de desglose y de la cotización personalizada. Ahora se muestra "Neto (c/margen)" e "IVA (19%)".
+  - Contenido verificado: Los precios mostrados coinciden exactamente con los montos oficiales de la planilla (ej: $1.585.069 para 3kW on grid), la fila independiente "Margen Distribuidor" fue removida y ahora se muestra "Neto (c/margen)" e "IVA (19%)".
