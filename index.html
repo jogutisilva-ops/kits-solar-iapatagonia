@@ -573,6 +573,18 @@
             animation: fadeIn 0.5s ease-in-out;
         }
 
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .calculator-grid {
+                grid-template-columns: 380px 1fr;
+            }
+        }
+
         .quote-header {
             display: flex;
             justify-content: space-between;
@@ -1126,48 +1138,127 @@
     <div id="custom-quote-view" style="display: none;">
         <section class="kits-section">
             <div class="quote-panel">
-                <div class="quote-header">
-                    <div class="quote-title-desc">
-                        <h2>Detalle del Presupuesto Cotizado</h2>
-                        <p>Configuración específica encontrada en la hoja del resumen del archivo de precios.</p>
-                    </div>
-                    <div class="quote-badge">
-                        <i class="fa-solid fa-receipt"></i> Sistema Híbrido Huawei 4.2kWp c/ 5kWh Batería
-                    </div>
-                </div>
-
-                <div class="quote-table-wrapper">
-                    <table class="quote-table">
-                        <thead>
-                            <tr>
-                                <th>Categoría</th>
-                                <th>Componente / Modelo</th>
-                                <th>Marca</th>
-                                <th>Descripción</th>
-                                <th style="text-align: right;">P. Unitario</th>
-                                <th style="text-align: center;">Cantidad</th>
-                                <th style="text-align: right;">Total Neto</th>
-                            </tr>
-                        </thead>
-                        <tbody id="quote-table-body">
-                            <!-- Injected by JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="quote-summary-block">
-                    <div class="quote-summary-card">
-                        <div class="quote-summary-row">
-                            <span>Subtotal Neto:</span>
-                            <span id="quote-net-val">$0</span>
+                <div class="calculator-grid">
+                    <!-- Left Column: Controls -->
+                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border); border-radius: 20px; padding: 1.8rem; display: flex; flex-direction: column; gap: 1.5rem;">
+                        <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--brand-amarillo); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fa-solid fa-sliders"></i> Configura tu Sistema
+                        </h3>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                            <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Marca del Sistema:</label>
+                            <select id="calc-brand" onchange="onCalcBrandChange()" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none;">
+                                <option value="Huawei">Huawei</option>
+                                <option value="GoodWe">GoodWe</option>
+                            </select>
                         </div>
-                        <div class="quote-summary-row">
-                            <span>IVA (19%):</span>
-                            <span id="quote-iva-val">$0</span>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                            <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Tipo de Inversor:</label>
+                            <select id="calc-inv-type" onchange="onCalcInvTypeChange()" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none;">
+                                <option value="HIBRIDO">Híbrido (Backup c/ Batería)</option>
+                                <option value="ON GRID">On-Grid (Sin Respaldo)</option>
+                            </select>
                         </div>
-                        <div class="quote-summary-row total">
-                            <span>Total Final:</span>
-                            <span id="quote-total-val">$0</span>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                            <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Modelo del Inversor:</label>
+                            <select id="calc-inverter" onchange="recalculateQuote()" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none;">
+                                <!-- Injected by JS -->
+                            </select>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Cantidad de Inversores:</label>
+                                <span id="calc-inv-qty-label" style="font-size: 0.9rem; font-weight: 700; color: var(--brand-celeste);">1</span>
+                            </div>
+                            <input type="range" id="calc-inv-qty" min="1" max="3" value="1" oninput="updateQtyLabel('calc-inv-qty'); recalculateQuote();" style="accent-color: var(--brand-amarillo); width: 100%;">
+                        </div>
+
+                        <div id="calc-battery-wrapper" style="display: flex; flex-direction: column; gap: 1.5rem; border-top: 1px solid var(--card-border); padding-top: 1rem;">
+                            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Modelo de Batería:</label>
+                                <select id="calc-battery-model" onchange="recalculateQuote()" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none;">
+                                    <!-- Injected by JS -->
+                                </select>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Módulos de Batería:</label>
+                                    <span id="calc-bat-qty-label" style="font-size: 0.9rem; font-weight: 700; color: var(--brand-celeste);">1 (5 kWh)</span>
+                                </div>
+                                <input type="range" id="calc-bat-qty" min="0" max="6" value="1" oninput="updateQtyLabel('calc-bat-qty'); recalculateQuote();" style="accent-color: var(--brand-amarillo); width: 100%;">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 1.5rem; border-top: 1px solid var(--card-border); padding-top: 1rem;">
+                            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Modelo de Panel Solar:</label>
+                                <select id="calc-panel-model" onchange="recalculateQuote()" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none;">
+                                    <option value="TSM-NEG21C.20">Trina Solar Vertex N 715Wp</option>
+                                    <option value="JAM66D45LB">JA Solar Bifacial 715Wp</option>
+                                </select>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Cantidad de Paneles:</label>
+                                    <span id="calc-panel-qty-label" style="font-size: 0.9rem; font-weight: 700; color: var(--brand-celeste);">10 (7.15 kWp)</span>
+                                </div>
+                                <input type="range" id="calc-panel-qty" min="0" max="40" value="10" oninput="updateQtyLabel('calc-panel-qty'); recalculateQuote();" style="accent-color: var(--brand-amarillo); width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Results -->
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem; min-width: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                            <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fa-solid fa-receipt"></i> Detalle del Presupuesto
+                            </h3>
+                            <div class="quote-badge" id="calc-summary-badge" style="margin-left: 0;">
+                                Sistema Híbrido Huawei 7.15 kWp
+                            </div>
+                        </div>
+
+                        <div class="quote-table-wrapper" style="margin-bottom: 0;">
+                            <table class="quote-table">
+                                <thead>
+                                    <tr>
+                                        <th>Categoría</th>
+                                        <th>Componente</th>
+                                        <th style="text-align: right;">P. Unitario</th>
+                                        <th style="text-align: center;">Cant.</th>
+                                        <th style="text-align: right;">Total Neto</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="calc-table-body">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="display: flex; justify-content: flex-end;">
+                            <div class="quote-summary-card" style="min-width: 320px; width: 100%; max-width: 450px;">
+                                <div class="quote-summary-row">
+                                    <span>Subtotal Neto:</span>
+                                    <span id="calc-net-val">$0</span>
+                                </div>
+                                <div class="quote-summary-row">
+                                    <span>IVA (19%):</span>
+                                    <span id="calc-iva-val">$0</span>
+                                </div>
+                                <div class="quote-summary-row">
+                                    <span>Margen Distribuidor (25% Neto):</span>
+                                    <span id="calc-margen-val">$0</span>
+                                </div>
+                                <div class="quote-summary-row total">
+                                    <span>Total Público c/IVA:</span>
+                                    <span id="calc-total-val" style="color: var(--brand-amarillo) !important;">$0</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1508,7 +1599,7 @@
         // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
             renderKits();
-            renderCustomQuote();
+            initCalculator();
             updateStats();
         });
 
@@ -1707,28 +1798,401 @@
             });
         }
 
-        // Render Custom Quote panel
-        function renderCustomQuote() {
-            const tbody = document.getElementById('quote-table-body');
+        // Product Catalog Price list (Neto unit prices in CLP)
+        const PRODUCT_CATALOG = {
+            inverters: {
+                Huawei: {
+                    HIBRIDO: [
+                        { codigo: "SUN2000-2KTL-L1", descripcion: "Inversor Híbrido Huawei 2kW", precio: 595000 },
+                        { codigo: "SUN2000-4KTL-L1", descripcion: "Inversor Híbrido Huawei 4kW", precio: 657500 },
+                        { codigo: "SUN2000-6KTL-L1", descripcion: "Inversor Híbrido Huawei 6kW", precio: 789000 }
+                    ],
+                    "ON GRID": [
+                        { codigo: "SUN2000-2KTL-L1", descripcion: "Inversor Híbrido Huawei 2kW", precio: 595000 },
+                        { codigo: "SUN2000-4KTL-L1", descripcion: "Inversor Híbrido Huawei 4kW", precio: 657500 },
+                        { codigo: "SUN2000-6KTL-L1", descripcion: "Inversor Híbrido Huawei 6kW", precio: 789000 }
+                    ]
+                },
+                GoodWe: {
+                    HIBRIDO: [
+                        { codigo: "GW3000-ES-20", descripcion: "Inversor Híbrido GoodWe 3kW", precio: 795200 },
+                        { codigo: "GW3600-ES-20", descripcion: "Inversor Híbrido GoodWe 3.6kW", precio: 811024 },
+                        { codigo: "GW5000-ES-20", descripcion: "Inversor Híbrido GoodWe 5kW", precio: 1061024 },
+                        { codigo: "GW6000-ES-20", descripcion: "Inversor Híbrido GoodWe 6kW", precio: 1130101 },
+                        { codigo: "GW8500-BP", descripcion: "Inversor Respaldo GoodWe 8.5kW", precio: 1595000 },
+                        { codigo: "GW10K-BP", descripcion: "Inversor Respaldo GoodWe 10kW", precio: 1913000 },
+                        { codigo: "GW12K-BP", descripcion: "Inversor Respaldo GoodWe 12kW", precio: 2030846 }
+                    ],
+                    "ON GRID": [
+                        { codigo: "GW3000-DNS-30", descripcion: "Inversor GoodWe 3kW On-Grid", precio: 325389 },
+                        { codigo: "GW4200-DNS-30", descripcion: "Inversor GoodWe 4.2kW On-Grid", precio: 366653 },
+                        { codigo: "GW5000-DNS-30", descripcion: "Inversor GoodWe 5kW On-Grid", precio: 380800 },
+                        { codigo: "GW6000-MS-30", descripcion: "Inversor GoodWe 6kW On-Grid", precio: 530526 },
+                        { codigo: "GW8500-MS-30", descripcion: "Inversor GoodWe 8.5kW On-Grid", precio: 598500 },
+                        { codigo: "GW10K-MS-30", descripcion: "Inversor GoodWe 10kW On-Grid", precio: 637000 }
+                    ]
+                }
+            },
+            batteries: {
+                Huawei: [
+                    { codigo: "LUNA2000-5-E0", descripcion: "Módulo Batería Litio Huawei LUNA2000 5kWh", precio: 2070221 }
+                ],
+                GoodWe: [
+                    { codigo: "LX A5.0-30", descripcion: "Batería Litio GoodWe Lynx Home U 5.4kWh", precio: 640000 }
+                ]
+            },
+            panels: {
+                "TSM-NEG21C.20": { codigo: "TSM-NEG21C.20", marca: "Trina Solar", descripcion: "Panel Solar Bifacial Trina 715Wp", precio: 105691 },
+                "JAM66D45LB": { codigo: "JAM66D45LB", marca: "JA Solar", descripcion: "Panel Solar Bifacial JA Solar 715Wp", precio: 105691 }
+            },
+            accessories: {
+                huawei_battery_pack: { codigo: "LUNA2000-5KW-C0", descripcion: "Módulo Potencia Batería Litio LUNA2000", precio: 781250 },
+                huawei_sensor: { codigo: "DDSU666-H", descripcion: "Smart Power Sensor DDSU666-H Monofásico", precio: 56485 },
+                huawei_dongle: { codigo: "SDongleA-05", descripcion: "Smart Dongle WLAN/FE Huawei", precio: 78805 },
+                goodwe_sensor: { codigo: "SmartMeter-GW", descripcion: "GoodWe Smart Meter Monofásico", precio: 80000 },
+                structure: {
+                    riel: { codigo: "Riel-5m", descripcion: "Riel de Montaje Aluminio 5m", precio: 18320 },
+                    bracket: { codigo: "Bracket-L", descripcion: "Fijación Tipo L para Techo Madera", precio: 1100 },
+                    copla: { codigo: "Copla-Riel", descripcion: "Copla Riel Reforzado", precio: 2500 },
+                    clamp_mid: { codigo: "Clamp-Mid", descripcion: "Abrazadera Media (Clamp Medio)", precio: 496 },
+                    clamp_end: { codigo: "Clamp-End", descripcion: "Abrazadera Final (Clamp Final)", precio: 496 },
+                    mc4_m: { codigo: "MC4-M", descripcion: "Conector MC4 Macho Original", precio: 680 },
+                    mc4_f: { codigo: "MC4-F", descripcion: "Conector MC4 Hembra Original", precio: 680 },
+                    cable_red: { codigo: "Cable-Red-6mm", descripcion: "Cable Solar Rojo 6mm", precio: 948 },
+                    cable_black: { codigo: "Cable-Black-6mm", descripcion: "Cable Solar Negro 6mm", precio: 948 }
+                }
+            }
+        };
+
+        // Initialize Calculator
+        function initCalculator() {
+            onCalcBrandChange();
+        }
+
+        // Qty Label updates
+        function updateQtyLabel(elementId) {
+            const val = document.getElementById(elementId).value;
+            if (elementId === 'calc-inv-qty') {
+                document.getElementById('calc-inv-qty-label').innerText = val;
+            } else if (elementId === 'calc-bat-qty') {
+                const brand = document.getElementById('calc-brand').value;
+                const capacity = brand === 'Huawei' ? (val * 5) : (val * 5.4);
+                document.getElementById('calc-bat-qty-label').innerText = val + " (" + capacity.toFixed(1) + " kWh)";
+            } else if (elementId === 'calc-panel-qty') {
+                const pQty = parseInt(val);
+                const power = (pQty * 715) / 1000;
+                document.getElementById('calc-panel-qty-label').innerText = pQty + " (" + power.toFixed(2) + " kWp)";
+            }
+        }
+
+        // Handler: Brand selection change
+        function onCalcBrandChange() {
+            const brand = document.getElementById('calc-brand').value;
+            onCalcInvTypeChange();
+        }
+
+        // Handler: Inverter Type change
+        function onCalcInvTypeChange() {
+            const brand = document.getElementById('calc-brand').value;
+            const type = document.getElementById('calc-inv-type').value;
+            const inverterSelect = document.getElementById('calc-inverter');
+            
+            // Filter inverters
+            const modelList = PRODUCT_CATALOG.inverters[brand][type];
+            inverterSelect.innerHTML = '';
+            modelList.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.codigo;
+                opt.innerText = m.codigo + " (" + m.descripcion + ")";
+                inverterSelect.appendChild(opt);
+            });
+            
+            // Handle battery section visibility and default value
+            const batWrapper = document.getElementById('calc-battery-wrapper');
+            const batModelSelect = document.getElementById('calc-battery-model');
+            const batQtyInput = document.getElementById('calc-bat-qty');
+            
+            batModelSelect.innerHTML = '';
+            
+            if (type === 'HIBRIDO') {
+                batWrapper.style.display = 'flex';
+                // Add brand-specific batteries
+                const batteries = PRODUCT_CATALOG.batteries[brand];
+                batteries.forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b.codigo;
+                    opt.innerText = b.codigo + " (" + b.descripcion + ")";
+                    batModelSelect.appendChild(opt);
+                });
+                
+                // If it was 0, set default to 1 module
+                if (parseInt(batQtyInput.value) === 0) {
+                    batQtyInput.value = 1;
+                }
+            } else {
+                batWrapper.style.display = 'none';
+                batQtyInput.value = 0;
+            }
+            
+            updateQtyLabel('calc-inv-qty');
+            updateQtyLabel('calc-bat-qty');
+            updateQtyLabel('calc-panel-qty');
+            recalculateQuote();
+        }
+
+        // Quote recalculation engine
+        function recalculateQuote() {
+            const brand = document.getElementById('calc-brand').value;
+            const invType = document.getElementById('calc-inv-type').value;
+            const invModel = document.getElementById('calc-inverter').value;
+            const invQty = parseInt(document.getElementById('calc-inv-qty').value);
+            const batModel = document.getElementById('calc-battery-model').value;
+            const batQty = parseInt(document.getElementById('calc-bat-qty').value);
+            const panelModel = document.getElementById('calc-panel-model').value;
+            const panelQty = parseInt(document.getElementById('calc-panel-qty').value);
+
+            let bom = [];
+            let totalNeto = 0;
+
+            // 1. Inverter
+            const invData = PRODUCT_CATALOG.inverters[brand][invType].find(i => i.codigo === invModel);
+            if (invData) {
+                const itemTotal = invData.precio * invQty;
+                bom.push({
+                    categoria: "Inversor",
+                    codigo: invData.codigo,
+                    descripcion: invData.descripcion,
+                    precio_unitario: invData.precio,
+                    cantidad: invQty,
+                    total: itemTotal
+                });
+                totalNeto += itemTotal;
+            }
+
+            // 2. Battery Storage
+            if (invType === 'HIBRIDO' && batQty > 0) {
+                const batData = PRODUCT_CATALOG.batteries[brand].find(b => b.codigo === batModel);
+                if (batData) {
+                    const itemTotal = batData.precio * batQty;
+                    bom.push({
+                        categoria: "Batería",
+                        codigo: batData.codigo,
+                        descripcion: batData.descripcion,
+                        precio_unitario: batData.precio,
+                        cantidad: batQty,
+                        total: itemTotal
+                    });
+                    totalNeto += itemTotal;
+                }
+
+                // Required battery control module for Huawei LUNA2000
+                if (brand === 'Huawei') {
+                    const accData = PRODUCT_CATALOG.accessories.huawei_battery_pack;
+                    const itemTotal = accData.precio * 1;
+                    bom.push({
+                        categoria: "Accesorios",
+                        codigo: accData.codigo,
+                        descripcion: accData.descripcion,
+                        precio_unitario: accData.precio,
+                        cantidad: 1,
+                        total: itemTotal
+                    });
+                    totalNeto += itemTotal;
+                }
+            }
+
+            // 3. Solar Panels
+            if (panelQty > 0) {
+                const panelData = PRODUCT_CATALOG.panels[panelModel];
+                if (panelData) {
+                    const itemTotal = panelData.precio * panelQty;
+                    bom.push({
+                        categoria: "Panel Solar",
+                        codigo: panelData.codigo,
+                        descripcion: `${panelData.descripcion} (${panelData.marca})`,
+                        precio_unitario: panelData.precio,
+                        cantidad: panelQty,
+                        total: itemTotal
+                    });
+                    totalNeto += itemTotal;
+                }
+
+                // 4. Structure & Racking (Proportional calculations)
+                const struct = PRODUCT_CATALOG.accessories.structure;
+                
+                // Rieles: 1 riel de 5m covers approx 2 panels. So ceil(panelQty / 2)
+                const rielQty = Math.ceil(panelQty / 2);
+                if (rielQty > 0) {
+                    bom.push({
+                        categoria: "Estructura",
+                        codigo: struct.riel.codigo,
+                        descripcion: struct.riel.descripcion,
+                        precio_unitario: struct.riel.precio,
+                        cantidad: rielQty,
+                        total: struct.riel.precio * rielQty
+                    });
+                    totalNeto += struct.riel.precio * rielQty;
+                }
+
+                // Brackets L: ~3 per riel
+                const bracketQty = rielQty * 3 + 1; 
+                if (bracketQty > 0) {
+                    bom.push({
+                        categoria: "Estructura",
+                        codigo: struct.bracket.codigo,
+                        descripcion: struct.bracket.descripcion,
+                        precio_unitario: struct.bracket.precio,
+                        cantidad: bracketQty,
+                        total: struct.bracket.precio * bracketQty
+                    });
+                    totalNeto += struct.bracket.precio * bracketQty;
+                }
+
+                // Clams medio: 2 * (panelQty - rielQty)
+                const clampMidQty = Math.max(0, 2 * (panelQty - rielQty));
+                if (clampMidQty > 0) {
+                    bom.push({
+                        categoria: "Estructura",
+                        codigo: struct.clamp_mid.codigo,
+                        descripcion: struct.clamp_mid.descripcion,
+                        precio_unitario: struct.clamp_mid.precio,
+                        cantidad: clampMidQty,
+                        total: struct.clamp_mid.precio * clampMidQty
+                    });
+                    totalNeto += struct.clamp_mid.precio * clampMidQty;
+                }
+
+                // Clams final: 4 per row/string (assume 1 string, so 4 clams final)
+                const clampEndQty = panelQty > 0 ? 4 : 0;
+                if (clampEndQty > 0) {
+                    bom.push({
+                        categoria: "Estructura",
+                        codigo: struct.clamp_end.codigo,
+                        descripcion: struct.clamp_end.descripcion,
+                        precio_unitario: struct.clamp_end.precio,
+                        cantidad: clampEndQty,
+                        total: struct.clamp_end.precio * clampEndQty
+                    });
+                    totalNeto += struct.clamp_end.precio * clampEndQty;
+                }
+
+                // Cables: 10 meters per panel average
+                const cableQty = panelQty * 10;
+                if (cableQty > 0) {
+                    bom.push({
+                        categoria: "Cables",
+                        codigo: struct.cable_red.codigo,
+                        descripcion: struct.cable_red.descripcion,
+                        precio_unitario: struct.cable_red.precio,
+                        shadow: false,
+                        cantidad: cableQty,
+                        total: struct.cable_red.precio * cableQty
+                    });
+                    bom.push({
+                        categoria: "Cables",
+                        codigo: struct.cable_black.codigo,
+                        descripcion: struct.cable_black.descripcion,
+                        precio_unitario: struct.cable_black.precio,
+                        cantidad: cableQty,
+                        total: struct.cable_black.precio * cableQty
+                    });
+                    totalNeto += (struct.cable_red.precio * cableQty) + (struct.cable_black.precio * cableQty);
+                }
+
+                // MC4 Connectors: 4 pairs (8 units)
+                const mc4Qty = panelQty > 0 ? 4 : 0;
+                if (mc4Qty > 0) {
+                    bom.push({
+                        categoria: "Cables",
+                        codigo: struct.mc4_m.codigo,
+                        descripcion: struct.mc4_m.descripcion,
+                        precio_unitario: struct.mc4_m.precio,
+                        cantidad: mc4Qty,
+                        total: struct.mc4_m.precio * mc4Qty
+                    });
+                    bom.push({
+                        categoria: "Cables",
+                        codigo: struct.mc4_f.codigo,
+                        descripcion: struct.mc4_f.descripcion,
+                        precio_unitario: struct.mc4_f.precio,
+                        cantidad: mc4Qty,
+                        total: struct.mc4_f.precio * mc4Qty
+                    });
+                    totalNeto += (struct.mc4_m.precio * mc4Qty) + (struct.mc4_f.precio * mc4Qty);
+                }
+            }
+
+            // 5. Sensors & Communication Accessories (if needed)
+            if (brand === 'Huawei') {
+                // Smart Power Sensor DDSU666-H
+                const sensorData = PRODUCT_CATALOG.accessories.huawei_sensor;
+                bom.push({
+                    categoria: "Monitoreo",
+                    codigo: sensorData.codigo,
+                    descripcion: sensorData.descripcion,
+                    precio_unitario: sensorData.precio,
+                    cantidad: 1,
+                    total: sensorData.precio
+                });
+                totalNeto += sensorData.precio;
+
+                // Smart Dongle SDongleA-05
+                const dongleData = PRODUCT_CATALOG.accessories.huawei_dongle;
+                bom.push({
+                    categoria: "Monitoreo",
+                    codigo: dongleData.codigo,
+                    descripcion: dongleData.descripcion,
+                    precio_unitario: dongleData.precio,
+                    cantidad: 1,
+                    total: dongleData.precio
+                });
+                totalNeto += dongleData.precio;
+            } else if (brand === 'GoodWe') {
+                const sensorData = PRODUCT_CATALOG.accessories.goodwe_sensor;
+                bom.push({
+                    categoria: "Monitoreo",
+                    codigo: sensorData.codigo,
+                    descripcion: sensorData.descripcion,
+                    precio_unitario: sensorData.precio,
+                    cantidad: 1,
+                    total: sensorData.precio
+                });
+                totalNeto += sensorData.precio;
+            }
+
+            // 6. Financial Calculations
+            const iva = totalNeto * 0.19;
+            const margen = totalNeto * 0.25;
+            const totalPublico = totalNeto + iva + margen;
+
+            // Render table
+            const tbody = document.getElementById('calc-table-body');
             tbody.innerHTML = '';
             
-            KITS_DATA.custom_quote.items.forEach(item => {
+            bom.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${item.categoria || '-'}</strong></td>
-                    <td><code>${item.modelo_catalogo || '-'}</code></td>
-                    <td>${item.marca || '-'}</td>
-                    <td>${item.descripcion || '-'}</td>
-                    <td style="text-align: right;">${formatCLP(item.valor_unitario)}</td>
+                    <td><strong>${item.categoria}</strong></td>
+                    <td><code>${item.codigo || '-'}</code><br><span style="font-size: 0.75rem; color: var(--text-secondary);">${item.descripcion}</span></td>
+                    <td style="text-align: right;">${formatCLP(item.precio_unitario)}</td>
                     <td style="text-align: center;">${item.cantidad}</td>
-                    <td style="text-align: right; color: var(--text-primary); font-weight: 500;">${formatCLP(item.total)}</td>
+                    <td style="text-align: right; color: var(--text-primary);">${formatCLP(item.total)}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('quote-net-val').innerText = formatCLP(KITS_DATA.custom_quote.neto);
-            document.getElementById('quote-iva-val').innerText = formatCLP(KITS_DATA.custom_quote.iva);
-            document.getElementById('quote-total-val').innerText = formatCLP(KITS_DATA.custom_quote.total);
+            // Update badge
+            const powerKWp = (panelQty * 715) / 1000;
+            const batCap = invType === 'HIBRIDO' ? (batQty * (brand === 'Huawei' ? 5 : 5.4)) : 0;
+            const batText = batCap > 0 ? ` c/ ${batCap.toFixed(1)}kWh Batería` : '';
+            document.getElementById('calc-summary-badge').innerHTML = 
+                `<i class="fa-solid fa-receipt"></i> Sistema ${invType === 'HIBRIDO' ? 'Híbrido' : 'On-Grid'} ${brand} ${powerKWp.toFixed(2)}kWp${batText}`;
+
+            // Update financial elements
+            document.getElementById('calc-net-val').innerText = formatCLP(totalNeto);
+            document.getElementById('calc-iva-val').innerText = formatCLP(iva);
+            document.getElementById('calc-margen-val').innerText = formatCLP(margen);
+            document.getElementById('calc-total-val').innerText = formatCLP(totalPublico);
         }
 
         // Open Dialog Modal with Kit details
