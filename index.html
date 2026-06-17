@@ -1243,16 +1243,12 @@
                         <div style="display: flex; justify-content: flex-end;">
                             <div class="quote-summary-card" style="min-width: 320px; width: 100%; max-width: 450px;">
                                 <div class="quote-summary-row">
-                                    <span>Subtotal Neto:</span>
+                                    <span>Neto (c/margen):</span>
                                     <span id="calc-net-val">$0</span>
                                 </div>
                                 <div class="quote-summary-row">
                                     <span>IVA (19%):</span>
                                     <span id="calc-iva-val">$0</span>
-                                </div>
-                                <div class="quote-summary-row">
-                                    <span>Margen Distribuidor (25% Neto):</span>
-                                    <span id="calc-margen-val">$0</span>
                                 </div>
                                 <div class="quote-summary-row total">
                                     <span>Total Público c/IVA:</span>
@@ -1528,16 +1524,12 @@
                 <div class="fin-summary-box">
                     <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 0.5rem; font-size: 1.1rem;">💰 Resumen Financiero</h3>
                     <div class="fin-row">
-                        <span>Neto:</span>
+                        <span>Neto (c/margen):</span>
                         <span id="modal-neto">$0</span>
                     </div>
                     <div class="fin-row">
-                        <span>Subtotal c/IVA:</span>
+                        <span>IVA (19%):</span>
                         <span id="modal-subtotal-iva">$0</span>
-                    </div>
-                    <div class="fin-row">
-                        <span>Margen (25% Neto):</span>
-                        <span id="modal-margen">$0</span>
                     </div>
                     <div class="fin-row total">
                         <span>Total Público:</span>
@@ -1777,16 +1769,16 @@
                         <div class="price-divider"></div>
                         <div class="price-container">
                             <div class="price-row">
-                                <span>Subtotal Neto:</span>
-                                <span>${formatCLP(kit.financials.neto)}</span>
+                                <span>Neto (c/margen):</span>
+                                <span>${formatCLP(kit.financials.neto * 1.25)}</span>
                             </div>
                             <div class="price-row">
-                                <span>Subtotal c/IVA:</span>
-                                <span>${formatCLP(kit.financials.iva)}</span>
+                                <span>IVA (19%):</span>
+                                <span>${formatCLP(kit.financials.neto * 1.25 * 0.19)}</span>
                             </div>
                             <div class="price-row total-row">
                                 <span>Total Público:</span>
-                                <span class="price-val">${formatCLP(kit.financials.total)}</span>
+                                <span class="price-val">${formatCLP(kit.financials.neto * 1.25 * 1.19)}</span>
                             </div>
                         </div>
                         <button class="btn-details" onclick="openDetails('${kit.brand}', '${kit.type}', '${kit.name.replace(/'/g, "\'")}')">
@@ -2160,10 +2152,10 @@
                 totalNeto += sensorData.precio;
             }
 
-            // 6. Financial Calculations
-            const iva = totalNeto * 0.19;
-            const margen = totalNeto * 0.25;
-            const totalPublico = totalNeto + iva + margen;
+            // 6. Financial Calculations (Margin considered in Neto and subtotal)
+            const totalNetoConMargen = totalNeto * 1.25;
+            const iva = totalNetoConMargen * 0.19;
+            const totalPublico = totalNetoConMargen + iva;
 
             // Render table
             const tbody = document.getElementById('calc-table-body');
@@ -2174,9 +2166,9 @@
                 tr.innerHTML = `
                     <td><strong>${item.categoria}</strong></td>
                     <td><code>${item.codigo || '-'}</code><br><span style="font-size: 0.75rem; color: var(--text-secondary);">${item.descripcion}</span></td>
-                    <td style="text-align: right;">${formatCLP(item.precio_unitario)}</td>
+                    <td style="text-align: right;">${formatCLP(item.precio_unitario * 1.25)}</td>
                     <td style="text-align: center;">${item.cantidad}</td>
-                    <td style="text-align: right; color: var(--text-primary);">${formatCLP(item.total)}</td>
+                    <td style="text-align: right; color: var(--text-primary);">${formatCLP(item.total * 1.25)}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -2189,9 +2181,8 @@
                 `<i class="fa-solid fa-receipt"></i> Sistema ${invType === 'HIBRIDO' ? 'Híbrido' : 'On-Grid'} ${brand} ${powerKWp.toFixed(2)}kWp${batText}`;
 
             // Update financial elements
-            document.getElementById('calc-net-val').innerText = formatCLP(totalNeto);
+            document.getElementById('calc-net-val').innerText = formatCLP(totalNetoConMargen);
             document.getElementById('calc-iva-val').innerText = formatCLP(iva);
-            document.getElementById('calc-margen-val').innerText = formatCLP(margen);
             document.getElementById('calc-total-val').innerText = formatCLP(totalPublico);
         }
 
@@ -2215,18 +2206,17 @@
                 tr.innerHTML = `
                     <td><code>${item.codigo || '-'}</code></td>
                     <td>${item.descripcion || '-'}</td>
-                    <td style="text-align: right;">${formatCLP(item.precio_unitario)}</td>
+                    <td style="text-align: right;">${formatCLP(item.precio_unitario * 1.25)}</td>
                     <td style="text-align: center;">${item.cantidad}</td>
-                    <td style="text-align: right; color: var(--text-primary);">${formatCLP(item.total)}</td>
+                    <td style="text-align: right; color: var(--text-primary);">${formatCLP(item.total * 1.25)}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
             // Set financials
-            document.getElementById('modal-neto').innerText = formatCLP(kit.financials.neto);
-            document.getElementById('modal-subtotal-iva').innerText = formatCLP(kit.financials.iva);
-            document.getElementById('modal-margen').innerText = formatCLP(kit.financials.margen);
-            document.getElementById('modal-total').innerText = formatCLP(kit.financials.total);
+            document.getElementById('modal-neto').innerText = formatCLP(kit.financials.neto * 1.25);
+            document.getElementById('modal-subtotal-iva').innerText = formatCLP(kit.financials.neto * 1.25 * 0.19);
+            document.getElementById('modal-total').innerText = formatCLP(kit.financials.neto * 1.25 * 1.19);
 
             // Update interactive system diagram
             const hasBattery = kit.items.some(i => i.descripcion && (i.descripcion.toLowerCase().includes('bateria') || i.descripcion.toLowerCase().includes('batería') || i.descripcion.toLowerCase().includes('luna2000') || i.descripcion.toLowerCase().includes('lynx')) && parseFloat(i.cantidad) > 0);
