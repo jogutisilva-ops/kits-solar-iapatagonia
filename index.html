@@ -999,6 +999,7 @@
             <nav class="nav-tabs">
                 <button class="tab-link active" onclick="switchMainTab('standard-kits')">Kits Estándar</button>
                 <button class="tab-link" onclick="switchMainTab('custom-quote')">Cotización Personalizada</button>
+                <button class="tab-link" onclick="switchMainTab('tech-specs')">Fichas Técnicas</button>
             </nav>
         </div>
     </header>
@@ -1130,6 +1131,231 @@
         </section>
     </div>
 
+    <!-- Section 3: Technical Specifications -->
+    <div id="tech-specs-view" style="display: none;">
+        <section class="controls-section">
+            <div class="filters-wrapper" style="justify-content: center; gap: 1rem;">
+                <button class="btn-filter active" id="btn-spec-panels" onclick="switchSpecsCategory('panels')">
+                    <i class="fa-solid fa-solar-panel"></i> Paneles Solares
+                </button>
+                <button class="btn-filter" id="btn-spec-inverters" onclick="switchSpecsCategory('inverters')">
+                    <i class="fa-solid fa-bolt"></i> Inversores
+                </button>
+                <button class="btn-filter" id="btn-spec-batteries" onclick="switchSpecsCategory('batteries')">
+                    <i class="fa-solid fa-battery-three-quarters"></i> Baterías
+                </button>
+            </div>
+        </section>
+
+        <section class="kits-section">
+            <!-- Panels Category -->
+            <div id="specs-panels-cat" class="specs-category-view">
+                <div class="kits-grid" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));">
+                    <!-- Trina Solar Card -->
+                    <div class="kit-card goodwe" style="min-height: auto;">
+                        <div class="card-header">
+                            <span class="brand-badge goodwe">Trina Solar</span>
+                            <span class="type-badge hybrid">Bifacial Doble Vidrio</span>
+                        </div>
+                        <h3 class="kit-title" style="margin-bottom: 0.8rem;">Vertex N 715Wp (TSM-NEG21C.20)</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Módulo de ultra-alta potencia tipo N con tecnología bifacial doble vidrio.</p>
+                        
+                        <div class="modal-table-container">
+                            <table class="modal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parámetro</th>
+                                        <th>Valor / Especificación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>Potencia Nominal (Pmax)</strong></td><td>715 Wp</td></tr>
+                                    <tr><td><strong>Tipo de Célula</strong></td><td>Monocristalina N-type i-TOPCon</td></tr>
+                                    <tr><td><strong>Eficiencia del Módulo</strong></td><td>23.0%</td></tr>
+                                    <tr><td><strong>Voltaje en Pmax (Vmpp)</strong></td><td>41.1 V</td></tr>
+                                    <tr><td><strong>Corriente en Pmax (Impp)</strong></td><td>17.40 A</td></tr>
+                                    <tr><td><strong>Voltaje en Vacío (Voc)</strong></td><td>49.2 V</td></tr>
+                                    <tr><td><strong>Corriente de Cortocircuito (Isc)</strong></td><td>18.44 A</td></tr>
+                                    <tr><td><strong>Dimensiones</strong></td><td>2384 × 1303 × 33 mm</td></tr>
+                                    <tr><td><strong>Peso</strong></td><td>38.3 kg</td></tr>
+                                    <tr><td><strong>Garantía</strong></td><td>12 años de producto / 30 años de potencia lineal</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- JA Solar Card -->
+                    <div class="kit-card huawei" style="min-height: auto;">
+                        <div class="card-header">
+                            <span class="brand-badge huawei">JA Solar</span>
+                            <span class="type-badge hybrid">Bifacial Doble Vidrio</span>
+                        </div>
+                        <h3 class="kit-title" style="margin-bottom: 0.8rem;">Bifacial N-Type 715Wp (JAM66D45LB)</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Módulo bifacial doble vidrio de alta densidad de energía y tecnología avanzada.</p>
+                        
+                        <div class="modal-table-container">
+                            <table class="modal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parámetro</th>
+                                        <th>Valor / Especificación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>Potencia Nominal (Pmax)</strong></td><td>715 Wp</td></tr>
+                                    <tr><td><strong>Tipo de Célula</strong></td><td>Monocristalina N-type Bifacial</td></tr>
+                                    <tr><td><strong>Eficiencia del Módulo</strong></td><td>22.8%</td></tr>
+                                    <tr><td><strong>Voltaje en Pmax (Vmpp)</strong></td><td>42.4 V</td></tr>
+                                    <tr><td><strong>Corriente en Pmax (Impp)</strong></td><td>16.86 A</td></tr>
+                                    <tr><td><strong>Voltaje en Vacío (Voc)</strong></td><td>50.8 V</td></tr>
+                                    <tr><td><strong>Corriente de Cortocircuito (Isc)</strong></td><td>17.85 A</td></tr>
+                                    <tr><td><strong>Dimensiones</strong></td><td>2465 × 1134 × 30 mm</td></tr>
+                                    <tr><td><strong>Peso</strong></td><td>34.6 kg</td></tr>
+                                    <tr><td><strong>Garantía</strong></td><td>12 años de producto / 30 años de potencia lineal</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inverters Category -->
+            <div id="specs-inverters-cat" class="specs-category-view" style="display: none;">
+                <div class="kits-grid" style="grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));">
+                    <!-- Huawei Inverters -->
+                    <div class="kit-card huawei" style="min-height: auto;">
+                        <div class="card-header">
+                            <span class="brand-badge huawei">Huawei</span>
+                            <span class="type-badge hybrid">Híbrido Monofásico</span>
+                        </div>
+                        <h3 class="kit-title" style="margin-bottom: 0.8rem;">SUN2000-(2KTL-6KTL)-L1</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Inversores híbridos monofásicos de alta eficiencia, listos para almacenamiento directo.</p>
+                        
+                        <div class="modal-table-container">
+                            <table class="modal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parámetro</th>
+                                        <th>SUN2000-2KTL-L1</th>
+                                        <th>SUN2000-4KTL-L1</th>
+                                        <th>SUN2000-6KTL-L1</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>Potencia AC Nominal</strong></td><td>2.000 W</td><td>4.000 W</td><td>6.000 W</td></tr>
+                                    <tr><td><strong>Max. Potencia DC Entrada</strong></td><td>3.000 Wp</td><td>6.000 Wp</td><td>9.000 Wp</td></tr>
+                                    <tr><td><strong>Eficiencia Máxima</strong></td><td>98.2%</td><td>98.4%</td><td>98.4%</td></tr>
+                                    <tr><td><strong>Número de MPPT</strong></td><td>2</td><td>2</td><td>2</td></tr>
+                                    <tr><td><strong>Corriente Max. por MPPT</strong></td><td>12.5 A</td><td>12.5 A</td><td>12.5 A</td></tr>
+                                    <tr><td><strong>Seguridad Activa</strong></td><td colspan="3" style="text-align: center;">Protección de Arco Eléctrico (AFCI) Integrada</td></tr>
+                                    <tr><td><strong>Refrigeración</strong></td><td colspan="3" style="text-align: center;">Convección Natural (Sin ventiladores externos)</td></tr>
+                                    <tr><td><strong>Grado Protección / Batería</strong></td><td colspan="3" style="text-align: center;">IP65 / Compatible con LUNA2000 (360V)</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- GoodWe Inverters -->
+                    <div class="kit-card goodwe" style="min-height: auto;">
+                        <div class="card-header">
+                            <span class="brand-badge goodwe">GoodWe</span>
+                            <span class="type-badge hybrid">Híbrido Monofásico</span>
+                        </div>
+                        <h3 class="kit-title" style="margin-bottom: 0.8rem;">ES G2 Series (GW3000/5000/6000-ES-20)</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Inversores híbridos monofásicos de baja tensión (48V) con respaldo tipo UPS integrado.</p>
+                        
+                        <div class="modal-table-container">
+                            <table class="modal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parámetro</th>
+                                        <th>GW3000-ES-20</th>
+                                        <th>GW5000-ES-20</th>
+                                        <th>GW6000-ES-20</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>Potencia AC Nominal</strong></td><td>3.000 W</td><td>5.000 W</td><td>6.000 W</td></tr>
+                                    <tr><td><strong>Max. Potencia DC Entrada</strong></td><td>4.500 Wp</td><td>7.500 Wp</td><td>9.000 Wp</td></tr>
+                                    <tr><td><strong>Voltaje de Batería (Rango)</strong></td><td colspan="3" style="text-align: center;">48 V (Rango 40 V - 60 V)</td></tr>
+                                    <tr><td><strong>Tiempo de Transferencia UPS</strong></td><td colspan="3" style="text-align: center;">&lt; 10 ms (Respaldo rápido para cargas críticas)</td></tr>
+                                    <tr><td><strong>Número de MPPT</strong></td><td>2</td><td>2</td><td>2</td></tr>
+                                    <tr><td><strong>Corriente Max. por MPPT</strong></td><td>16 A</td><td>16 A</td><td>16 A</td></tr>
+                                    <tr><td><strong>Grado Protección / Batería</strong></td><td colspan="3" style="text-align: center;">IP65 / Compatible con Lynx Home U (48V)</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batteries Category -->
+            <div id="specs-batteries-cat" class="specs-category-view" style="display: none;">
+                <div class="kits-grid" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));">
+                    <!-- Huawei Battery -->
+                    <div class="kit-card huawei" style="min-height: auto;">
+                        <div class="card-header">
+                            <span class="brand-badge huawei">Huawei</span>
+                            <span class="type-badge hybrid">Alta Tensión (High-Voltage)</span>
+                        </div>
+                        <h3 class="kit-title" style="margin-bottom: 0.8rem;">LUNA2000 (LUNA2000-5-E0 / 5KW-C0)</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Sistema de almacenamiento inteligente con optimizador individual por módulo de batería.</p>
+                        
+                        <div class="modal-table-container">
+                            <table class="modal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parámetro</th>
+                                        <th>Especificación LUNA2000</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>Módulo de Batería / Potencia</strong></td><td>LUNA2000-5-E0 (Módulo de 5kWh) / LUNA2000-5KW-C0 (Control)</td></tr>
+                                    <tr><td><strong>Tecnología de Celda</strong></td><td>Fosfato de Hierro y Litio (LFP / LiFePO4)</td></tr>
+                                    <tr><td><strong>Capacidad Útil</strong></td><td>5 kWh por bloque (escalable a 10 kWh y 15 kWh por torre)</td></tr>
+                                    <tr><td><strong>Tensión Nominal (Rango)</strong></td><td>360 V / 450 V (Alta Tensión, Rango 350 V – 560 V)</td></tr>
+                                    <tr><td><strong>Profundidad de Descarga (DoD)</strong></td><td>100% útil (Aprovechamiento completo de la capacidad)</td></tr>
+                                    <tr><td><strong>Seguridad / Certificación</strong></td><td>Optimizador a nivel de módulo, balanceo dinámico, IP66</td></tr>
+                                    <tr><td><strong>Garantía / Duración</strong></td><td>10 años del fabricante</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- GoodWe Battery -->
+                    <div class="kit-card goodwe" style="min-height: auto;">
+                        <div class="card-header">
+                            <span class="brand-badge goodwe">GoodWe</span>
+                            <span class="type-badge hybrid">Baja Tensión (Low-Voltage)</span>
+                        </div>
+                        <h3 class="kit-title" style="margin-bottom: 0.8rem;">Lynx Home U Series (LX A5.0-30)</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Batería de litio segura y confiable de baja tensión (48V nominal) para sistemas residenciales.</p>
+                        
+                        <div class="modal-table-container">
+                            <table class="modal-table">
+                                <thead>
+                                    <tr>
+                                        <th>Parámetro</th>
+                                        <th>Especificación Lynx Home U</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>Modelo Comercial</strong></td><td>LX A5.0-30 (Batería Lynx Home U)</td></tr>
+                                    <tr><td><strong>Tecnología de Celda</strong></td><td>Fosfato de Hierro y Litio (LFP / LiFePO4)</td></tr>
+                                    <tr><td><strong>Capacidad Nominal / Útil</strong></td><td>5.40 kWh nominal / 4.86 kWh útil por bloque</td></tr>
+                                    <tr><td><strong>Tensión Nominal (Rango)</strong></td><td>51.2 V (Baja Tensión, Rango 48.0 V – 57.6 V)</td></tr>
+                                    <tr><td><strong>Corriente Max. Carga/Descarga</strong></td><td>90 A (Corriente constante para alta potencia)</td></tr>
+                                    <tr><td><strong>Escalabilidad</strong></td><td>Hasta 6 unidades en paralelo (capacidad de 29.16 kWh útil)</td></tr>
+                                    <tr><td><strong>Grado de Protección / Garantía</strong></td><td>IP65 (Interior/Exterior) / 10 años de garantía</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
     <!-- Modal Dialog for Kit Details -->
     <dialog id="details-modal" class="modal">
         <div class="modal-header">
@@ -1254,10 +1480,29 @@
             if (tabId === 'standard-kits') {
                 document.getElementById('standard-kits-view').style.display = 'block';
                 document.getElementById('custom-quote-view').style.display = 'none';
-            } else {
+                document.getElementById('tech-specs-view').style.display = 'none';
+            } else if (tabId === 'custom-quote') {
                 document.getElementById('standard-kits-view').style.display = 'none';
                 document.getElementById('custom-quote-view').style.display = 'block';
+                document.getElementById('tech-specs-view').style.display = 'none';
+            } else if (tabId === 'tech-specs') {
+                document.getElementById('standard-kits-view').style.display = 'none';
+                document.getElementById('custom-quote-view').style.display = 'none';
+                document.getElementById('tech-specs-view').style.display = 'block';
             }
+        }
+
+        // Specs Category Switching
+        function switchSpecsCategory(catId) {
+            const btns = document.querySelectorAll('#tech-specs-view .btn-filter');
+            btns.forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(`btn-spec-${catId}`).classList.add('active');
+            
+            const sections = document.querySelectorAll('.specs-category-view');
+            sections.forEach(s => s.style.display = 'none');
+            
+            document.getElementById(`specs-${catId}-cat`).style.display = 'block';
         }
 
         // Set Filters
