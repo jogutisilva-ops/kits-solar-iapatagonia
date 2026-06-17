@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Kits Solares - IA Patagonia</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-border-hover: rgba(255, 255, 255, 0.18);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            
+            --goodwe-color: #ff5722;
+            --huawei-color: #e50914;
+            --on-grid-color: #00f2fe;
+            --hybrid-color: #c56cf0;
+            
+            --accent-orange: #ff9f43;
+            --accent-blue: #00d2d3;
+            --accent-green: #1dd1a1;
+            
+            --glass-blur: blur(16px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Decorative background shapes */
+        .bg-glow-1 {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            top: -150px;
+            left: -150px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(80px);
+        }
+
+        .bg-glow-2 {
+            position: absolute;
+            width: 650px;
+            height: 650px;
+            bottom: 10%;
+            right: -100px;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(100px);
+        }
+        
+        .bg-glow-3 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            top: 40%;
+            left: 20%;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.07) 0%, rgba(245, 158, 11, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(80px);
+        }
+
+        header {
+            padding: 2.5rem 2rem 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 3s infinite alternate;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #ffffff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .excel-source {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.4rem 0.8rem;
+            border-radius: 99px;
+            border: 1px solid var(--card-border);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .excel-source i {
+            color: #107c41; /* Excel green */
+        }
+
+        /* Stats dashboard */
+        .stats-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 1rem auto 2.5rem;
+            padding: 0 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            backdrop-filter: var(--glass-blur);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card:hover {
+            border-color: var(--card-border-hover);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* Filters and Search */
+        .controls-section {
+            max-width: 1400px;
+            margin: 0 auto 2rem;
+            padding: 0 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .filters-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.2rem;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .btn-filter {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 0.5rem 1.2rem;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-filter:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--card-border-hover);
+        }
+
+        .btn-filter.active {
+            background: #ffffff;
+            color: #0b0f19;
+            border-color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .search-container {
+            position: relative;
+            min-width: 300px;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            border-radius: 99px;
+            padding: 0.6rem 1rem 0.6rem 2.8rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--card-border-hover);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.02);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 0.8rem;
+        }
+
+        .tab-link {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            position: relative;
+            transition: color 0.2s ease;
+        }
+
+        .tab-link:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-link.active {
+            color: var(--text-primary);
+        }
+
+        .tab-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.9rem;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, #f59e0b, #ef4444);
+            border-radius: 99px;
+        }
+
+        /* Kits Grid Layout */
+        .kits-section {
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            padding: 0 2rem;
+        }
+
+        .kits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Kit Card */
+        .kit-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 1.8rem;
+            backdrop-filter: var(--glass-blur);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 400px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .kit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+
+        .kit-card.goodwe::before {
+            background: linear-gradient(to right, var(--goodwe-color), var(--accent-orange));
+        }
+
+        .kit-card.huawei::before {
+            background: linear-gradient(to right, var(--huawei-color), #f43f5e);
+        }
+
+        .kit-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--card-border-hover);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 
+                        0 0 40px rgba(255, 255, 255, 0.02);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.2rem;
+        }
+
+        .brand-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.3rem 0.8rem;
+            border-radius: 99px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-badge.goodwe {
+            background: rgba(255, 87, 34, 0.15);
+            color: #ff7043;
+            border: 1px solid rgba(255, 87, 34, 0.25);
+        }
+
+        .brand-badge.huawei {
+            background: rgba(229, 9, 20, 0.15);
+            color: #ff4d4d;
+            border: 1px solid rgba(229, 9, 20, 0.25);
+        }
+
+        .type-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.3rem 0.8rem;
+            border-radius: 99px;
+        }
+
+        .type-badge.on-grid {
+            background: rgba(0, 242, 254, 0.12);
+            color: #00f2fe;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .type-badge.hybrid {
+            background: rgba(197, 108, 240, 0.12);
+            color: #d6a2e8;
+            border: 1px solid rgba(197, 108, 240, 0.2);
+        }
+
+        .kit-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .kit-specs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .spec-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .spec-item i {
+            font-size: 0.95rem;
+            width: 18px;
+            text-align: center;
+        }
+
+        .spec-item i.fa-solar-panel { color: #4ade80; }
+        .spec-item i.fa-bolt { color: #facc15; }
+        .spec-item i.fa-battery-three-quarters { color: #c084fc; }
+
+        .price-divider {
+            height: 1px;
+            background: var(--card-border);
+            margin: 1.2rem 0;
+        }
+
+        .price-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .price-row.total-row {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-top: 0.4rem;
+        }
+
+        .price-row.total-row .price-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .kit-card.goodwe:hover .price-row.total-row .price-val {
+            background: linear-gradient(135deg, #fff, #ff8a65);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .kit-card.huawei:hover .price-row.total-row .price-val {
+            background: linear-gradient(135deg, #fff, #ff7b7b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-details {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 0.8rem;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-details:hover {
+            background: #ffffff;
+            color: #0b0f19;
+            border-color: #ffffff;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Custom Quote Section styling */
+        .quote-panel {
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.06), transparent), var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            padding: 2.5rem;
+            backdrop-filter: var(--glass-blur);
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .quote-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .quote-title-desc {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .quote-title-desc h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .quote-title-desc p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .quote-badge {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+            color: #a5b4fc;
+            padding: 0.4rem 1rem;
+            border-radius: 99px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quote-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            background: rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .quote-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .quote-table th {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .quote-table td {
+            padding: 1rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .quote-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .quote-table tr:hover td {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .quote-summary-block {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .quote-summary-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 1.5rem;
+            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .quote-summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .quote-summary-row.total {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            font-weight: 700;
+            border-top: 1px solid var(--card-border);
+            padding-top: 0.8rem;
+            margin-top: 0.4rem;
+        }
+
+        .quote-summary-row.total span:last-child {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #4ade80;
+        }
+
+        /* Modal / Dialog styling */
+        .modal {
+            background: #0f172a;
+            color: var(--text-primary);
+            border: 1px solid var(--card-border-hover);
+            border-radius: 28px;
+            padding: 2rem;
+            max-width: 900px;
+            width: 90%;
+            margin: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .modal::backdrop {
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 1rem;
+        }
+
+        .modal-title-desc {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .modal-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .modal-close-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--text-primary);
+        }
+
+        .modal-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .modal-layout {
+                grid-template-columns: 3fr 2fr;
+            }
+        }
+
+        .modal-table-container {
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        .modal-table th {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.8rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .modal-table td {
+            padding: 0.8rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .modal-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .modal-financials {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .fin-summary-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .fin-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .fin-row.total {
+            border-top: 1px solid var(--card-border);
+            padding-top: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .fin-row.total span:last-child {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1dd1a1, #00d2d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .diagram-container {
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.01);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .diagram-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            align-self: flex-start;
+        }
+
+        .solar-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 1rem 0;
+            position: relative;
+        }
+
+        .flow-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            z-index: 2;
+        }
+
+        .node-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .node-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Active node styles */
+        .flow-node.active .node-icon-wrapper {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text-primary);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .flow-node.panel.active .node-icon-wrapper {
+            color: #4ade80;
+            border-color: #4ade80;
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.2);
+        }
+
+        .flow-node.inverter.active .node-icon-wrapper {
+            color: #facc15;
+            border-color: #facc15;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
+        }
+
+        .flow-node.battery.active .node-icon-wrapper {
+            color: #c084fc;
+            border-color: #c084fc;
+            box-shadow: 0 0 15px rgba(192, 132, 252, 0.2);
+        }
+
+        .flow-line {
+            position: absolute;
+            height: 2px;
+            background: var(--card-border);
+            top: calc(1rem + 24px);
+            z-index: 1;
+        }
+
+        .flow-line.line-1 {
+            left: 24px;
+            width: calc(50% - 24px);
+        }
+
+        .flow-line.line-2 {
+            right: 24px;
+            width: calc(50% - 24px);
+        }
+        
+        .flow-line.active {
+            background: linear-gradient(to right, #4ade80, #facc15);
+        }
+        .flow-line.active-2 {
+            background: linear-gradient(to right, #facc15, #c084fc);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #ef4444, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); filter: brightness(1); }
+            100% { transform: scale(1.05); filter: brightness(1.2); }
+        }
+
+        /* Responsive styling */
+        @media (max-width: 768px) {
+            header {
+                padding: 1.5rem 1rem;
+            }
+            .stats-dashboard {
+                padding: 0 1rem;
+            }
+            .controls-section {
+                padding: 0 1rem;
+            }
+            .kits-section {
+                padding: 0 1rem;
+            }
+            .quote-panel {
+                padding: 1.5rem;
+                margin: 0 1rem 3rem;
+            }
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .search-container {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+    <div class="bg-glow-3"></div>
+
+    <header>
+        <div class="header-top">
+            <div class="logo-container">
+                <i class="fa-solid fa-sun logo-icon"></i>
+                <div>
+                    <h1>Kits Solares IA Patagonia</h1>
+                    <span class="excel-source">
+                        <i class="fa-solid fa-file-excel"></i> Fuente: Tabla de precios Kits Huawei y Goodwe.xlsx
+                    </span>
+                </div>
+            </div>
+            
+            <nav class="nav-tabs">
+                <button class="tab-link active" onclick="switchMainTab('standard-kits')">Kits Estándar</button>
+                <button class="tab-link" onclick="switchMainTab('custom-quote')">Cotización Personalizada</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Section 1: Standard Kits -->
+    <div id="standard-kits-view">
+        <!-- Dashboard Stats -->
+        <section class="stats-dashboard">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(250, 204, 21, 0.1); color: #facc15;">
+                    <i class="fa-solid fa-solar-panel"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="stat-total-kits">19</span>
+                    <span class="stat-label">Kits Disponibles</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(0, 242, 254, 0.1); color: #00f2fe;">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="stat-total-ongrid">9</span>
+                    <span class="stat-label">Modelos On-Grid</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(197, 108, 240, 0.1); color: #d6a2e8;">
+                    <i class="fa-solid fa-battery-three-quarters"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="stat-total-hybrid">10</span>
+                    <span class="stat-label">Modelos Híbridos</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(29, 209, 161, 0.1); color: #1dd1a1;">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">25%</span>
+                    <span class="stat-label">Margen Incluido</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters & Search -->
+        <section class="controls-section">
+            <div class="filters-wrapper">
+                <div class="filter-group">
+                    <span class="filter-label">Marca:</span>
+                    <button class="btn-filter active" data-filter-type="brand" data-filter-val="all" onclick="setFilter('brand', 'all')">Todos</button>
+                    <button class="btn-filter" data-filter-type="brand" data-filter-val="GoodWe" onclick="setFilter('brand', 'GoodWe')">GoodWe</button>
+                    <button class="btn-filter" data-filter-type="brand" data-filter-val="Huawei" onclick="setFilter('brand', 'Huawei')">Huawei</button>
+                </div>
+                
+                <div class="filter-group">
+                    <span class="filter-label">Tipo:</span>
+                    <button class="btn-filter active" data-filter-type="type" data-filter-val="all" onclick="setFilter('type', 'all')">Todos</button>
+                    <button class="btn-filter" data-filter-type="type" data-filter-val="ON GRID" onclick="setFilter('type', 'ON GRID')">On Grid</button>
+                    <button class="btn-filter" data-filter-type="type" data-filter-val="HIBRIDOS" onclick="setFilter('type', 'HIBRIDOS')">Híbridos</button>
+                </div>
+
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="search-bar" class="search-input" placeholder="Buscar kit o componente..." oninput="handleSearch()">
+                </div>
+            </div>
+        </section>
+
+        <!-- Grid -->
+        <section class="kits-section">
+            <div class="kits-grid" id="kits-grid-container">
+                <!-- Dynamic cards injected here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Section 2: Custom Quote -->
+    <div id="custom-quote-view" style="display: none;">
+        <section class="kits-section">
+            <div class="quote-panel">
+                <div class="quote-header">
+                    <div class="quote-title-desc">
+                        <h2>Detalle del Presupuesto Cotizado</h2>
+                        <p>Configuración específica encontrada en la hoja del resumen del archivo de precios.</p>
+                    </div>
+                    <div class="quote-badge">
+                        <i class="fa-solid fa-receipt"></i> Sistema Híbrido Huawei 4.2kWp c/ 5kWh Batería
+                    </div>
+                </div>
+
+                <div class="quote-table-wrapper">
+                    <table class="quote-table">
+                        <thead>
+                            <tr>
+                                <th>Categoría</th>
+                                <th>Componente / Modelo</th>
+                                <th>Marca</th>
+                                <th>Descripción</th>
+                                <th style="text-align: right;">P. Unitario</th>
+                                <th style="text-align: center;">Cantidad</th>
+                                <th style="text-align: right;">Total Neto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quote-table-body">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="quote-summary-block">
+                    <div class="quote-summary-card">
+                        <div class="quote-summary-row">
+                            <span>Subtotal Neto:</span>
+                            <span id="quote-net-val">$0</span>
+                        </div>
+                        <div class="quote-summary-row">
+                            <span>IVA (19%):</span>
+                            <span id="quote-iva-val">$0</span>
+                        </div>
+                        <div class="quote-summary-row total">
+                            <span>Total Final:</span>
+                            <span id="quote-total-val">$0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal Dialog for Kit Details -->
+    <dialog id="details-modal" class="modal">
+        <div class="modal-header">
+            <div class="modal-title-desc">
+                <div class="modal-title" id="modal-kit-name">Nombre del Kit</div>
+                <span class="excel-source" id="modal-kit-badge" style="margin-top: 5px;">Categoría</span>
+            </div>
+            <button class="modal-close-btn" onclick="closeModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <div class="modal-layout">
+            <div>
+                <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 1rem;">📋 Lista de Materiales (BOM)</h3>
+                <div class="modal-table-container">
+                    <table class="modal-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th style="text-align: right;">P. Unitario</th>
+                                <th style="text-align: center;">Cant.</th>
+                                <th style="text-align: right;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-table-body">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="fin-summary-box">
+                    <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: 0.5rem; font-size: 1.1rem;">💰 Resumen Financiero</h3>
+                    <div class="fin-row">
+                        <span>Neto:</span>
+                        <span id="modal-neto">$0</span>
+                    </div>
+                    <div class="fin-row">
+                        <span>Subtotal c/IVA:</span>
+                        <span id="modal-subtotal-iva">$0</span>
+                    </div>
+                    <div class="fin-row">
+                        <span>Margen (25% Neto):</span>
+                        <span id="modal-margen">$0</span>
+                    </div>
+                    <div class="fin-row total">
+                        <span>Total Público:</span>
+                        <span id="modal-total">$0</span>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-title"><i class="fa-solid fa-project-diagram"></i> Diagrama del Sistema</div>
+                    <div class="solar-flow">
+                        <!-- Panel node -->
+                        <div class="flow-node panel active">
+                            <div class="node-icon-wrapper">
+                                <i class="fa-solid fa-solar-panel"></i>
+                            </div>
+                            <span class="node-label">Paneles</span>
+                        </div>
+                        <div class="flow-line line-1 active" id="diag-line-1"></div>
+                        
+                        <!-- Inverter node -->
+                        <div class="flow-node inverter active">
+                            <div class="node-icon-wrapper">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <span class="node-label">Inversor</span>
+                        </div>
+                        <div class="flow-line line-2" id="diag-line-2"></div>
+                        
+                        <!-- Battery node -->
+                        <div class="flow-node battery" id="diag-battery-node">
+                            <div class="node-icon-wrapper">
+                                <i class="fa-solid fa-battery-three-quarters"></i>
+                            </div>
+                            <span class="node-label">Baterías</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Javascript Logic -->
+    <script>
+        // Data placeholder
+        const KITS_DATA = {"summary": {"GoodWe": {"ON GRID": [{"potencia": "3kW", "total_iva": 1585068.741}, {"potencia": "4.2kW", "total_iva": 1644487.688}, {"potencia": "5kW", "total_iva": 2198052.808}, {"potencia": "6kW", "total_iva": 2413658.703}, {"potencia": "8.5kW", "total_iva": 3346900.297}, {"potencia": "10kW", "total_iva": 4094375.216}], "HIBRIDOS": [{"potencia": "3kW", "total_iva": 3190395.899}, {"potencia": "3.6kW", "total_iva": 3213182.459}, {"potencia": "5kW", "total_iva": 3863354.774}, {"potencia": "6kW", "total_iva": 3962824.641}, {"potencia": "8kW", "total_iva": 5776631.017}, {"potencia": "10kW", "total_iva": 6523115.216}, {"potencia": "12kW", "total_iva": 6692813.816}]}, "Huawei": {"HIBRIDOS": [{"potencia": "2kW", "total_iva": 6101754.779}, {"potencia": "4kW", "total_iva": 6017663.099}, {"potencia": "6kW", "total_iva": 6978062.248}], "ON-GRID": [{"potencia": "2kW", "total_iva": 1832971.399}, {"potencia": "4kW", "total_iva": 2053269.659}, {"potencia": "6kW", "total_iva": 3006468.808}]}}, "custom_quote": {"items": [{"categoria": "Inversor", "modelo_catalogo": "SUN2000 -4KTL-L1", "marca": "Huawei", "descripcion": "INVERSOR HUAWEI ON GRID HIBRIDO MONOFASICO", "valor_unitario": 657500, "cantidad": 1.0, "total": 657500}, {"categoria": "Panel", "modelo_catalogo": "Panel Bifacial Trina Solar 715Wp", "marca": "Trina Solar", "descripcion": "TSM NEG21C.20 715Wp", "valor_unitario": 132113.689, "cantidad": 9.0, "total": 1189023.201}, {"categoria": "Bateria", "modelo_catalogo": "LUNA2000-5-E0 5KWH", "marca": "Huawei", "descripcion": "HUAWEI BATERIA DE LITIO LUNA2OOO 5KWH", "valor_unitario": 2070221.25, "cantidad": 1.0, "total": 2070221.25}, {"categoria": "Accesorios", "modelo_catalogo": "LUNA2000-5KW-CO", "marca": "Huawei", "descripcion": "MODULO DE POTENCIA PARA BATERIA DE LITIO", "valor_unitario": 781250, "cantidad": 1.0, "total": 781250}, {"categoria": "Accesorios", "modelo_catalogo": "BACKUP BOX-B0", "marca": "Huawei", "descripcion": "HUAWEI BACKUP BOX-B0 MONOFASICO", "valor_unitario": 596092.5, "cantidad": 1.0, "total": 596092.5}, {"categoria": "Accesorios", "modelo_catalogo": "SDongleA-05", "marca": "Huawei", "descripcion": "HUAWEI SMART DONGLE WLAN FE", "valor_unitario": 78805, "cantidad": 1.0, "total": 78805}, {"categoria": "Accesorios", "modelo_catalogo": "DDSU666-H", "marca": "Huawei", "descripcion": "HUAWEI SMART POWER SENSOR DDSU666-H", "valor_unitario": 70606.25, "cantidad": 1.0, "total": 70606.25}], "neto": 5443498.201, "iva": 1034264.658, "total": 6477762.859}, "detailed": {"GoodWe": {"HIBRIDOS": [{"name": "GOODWE Kit 3kW hibrido 5kWh", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 6.0, "total": 634145.7073}, {"codigo": "GW3000-ES-20", "descripcion": "Inversor 3kW hibrido", "precio_unitario": 795200, "cantidad": 1.0, "total": 795200}, {"codigo": "LX A5.0-30 w/ Wall-Mounted Accessory Pack", "descripcion": "Bateria 5kWh", "precio_unitario": 640000, "cantidad": 1.0, "total": 640000}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 3.0, "total": 54960}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 10.0, "total": 11000}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 12.0, "total": 5952}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 2215552.707, "iva": 2636507.722, "margen": 553888.1768, "total": 3190395.899}}, {"name": "GOODWE Kit 3.6kW hibrido 5kWh", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 6.0, "total": 634145.7073}, {"codigo": "GW3600-ES-20", "descripcion": "Inversor 3.6kW hibrido", "precio_unitario": 811024.0, "cantidad": 1.0, "total": 811024}, {"codigo": "LX A5.0-30 w/ Wall-Mounted Accessory Pack", "descripcion": "Bateria 5kWh", "precio_unitario": 640000, "cantidad": 1.0, "total": 640000}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 3.0, "total": 54960}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 10.0, "total": 11000}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 12.0, "total": 5952}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 2231376.707, "iva": 2655338.282, "margen": 557844.1768, "total": 3213182.459}}, {"name": "GOODWE Kit 5kW hibrido 5kWh", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 9.0, "total": 951218.561}, {"codigo": "GW5000-ES-20", "descripcion": "Inversor 5kW hibrido", "precio_unitario": 897259.6991, "cantidad": 1.0, "total": 897259.6991}, {"codigo": "LX A5.0-30 w/ Wall-Mounted Accessory Pack", "descripcion": "Bateria 5kWh", "precio_unitario": 640000, "cantidad": 1.0, "total": 640000}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 5.0, "total": 91600}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 16.0, "total": 17600}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 22.0, "total": 10912}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 2682885.26, "iva": 3192633.459, "margen": 670721.315, "total": 3863354.774}}, {"name": "GOODWE Kit 6kW hibrido 5kWh", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "modulos 715W", "precio_unitario": 105690.9512, "cantidad": 9.0, "total": 951218.561}, {"codigo": "GW6000-ES-20", "descripcion": "Inversor 6kW hibrido", "precio_unitario": 966335.9953703703, "cantidad": 1.0, "total": 966335.9954}, {"codigo": "LX A5.0-30 w/ Wall-Mounted Accessory Pack", "descripcion": "Bateria 5kWh", "precio_unitario": 640000, "cantidad": 1.0, "total": 640000}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 5.0, "total": 91600}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 16.0, "total": 17600}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 22.0, "total": 10912}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 2751961.556, "iva": 3274834.252, "margen": 687990.3891, "total": 3962824.641}}, {"name": "GOODWE Kit 8.5kW hibrido 10kWh", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 14.0, "total": 1479673.317}, {"codigo": "GW8000-ES-C10", "descripcion": "Inversor 8.5kW hibrido", "precio_unitario": 1005813.0, "cantidad": 1.0, "total": 1005813}, {"codigo": "LX A5.0-30 w/ Wall-Mounted Accessory Pack", "descripcion": "Bateria 5kWh", "precio_unitario": 640000, "cantidad": 2.0, "total": 1280000}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 7.0, "total": 128240}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 22.0, "total": 24200}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 24.0, "total": 11904}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 8.0, "total": 3968}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 8.0, "total": 5440}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 8.0, "total": 5440}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 4011549.317, "iva": 4773743.687, "margen": 1002887.329, "total": 5776631.017}}, {"name": "GOODWE Kit 10kW hibrido 10kWh", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 18.0, "total": 1902437.122}, {"codigo": "GW10K-ES-C10", "descripcion": "Inversor 10kW hibrido", "precio_unitario": 1043625.0, "cantidad": 1.0, "total": 1043625}, {"codigo": "LX A5.0-30 w/ Wall-Mounted Accessory Pack", "descripcion": "Bateria 5kWh", "precio_unitario": 640000, "cantidad": 2.0, "total": 1280000}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 9.0, "total": 164880}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 34.0, "total": 37400}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 6.0, "total": 15000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 30.0, "total": 14880}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 8.0, "total": 3968}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 8.0, "total": 5440}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 8.0, "total": 5440}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 4529941.122, "iva": 5390629.935, "margen": 1132485.28, "total": 6523115.216}}, {"name": "GOODWE Kit 12kW hibrido 10kWh", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 18.0, "total": 1902437.122}, {"codigo": "GW12K-ES-C10", "descripcion": "Inversor 12kW hibrido", "precio_unitario": 1156031.25, "cantidad": 1.0, "total": 1156031.25}, {"codigo": "LX A5.0-30 w/ Wall-Mounted Accessory Pack", "descripcion": "Bateria 5kWh", "precio_unitario": 640000, "cantidad": 2.0, "total": 1280000}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 9.0, "total": 164880}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 34.0, "total": 37400}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 6.0, "total": 15000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 30.0, "total": 14880}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 8.0, "total": 3968}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 12.0, "total": 8160}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 12.0, "total": 8160}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 4647787.372, "iva": 5530866.973, "margen": 1161946.843, "total": 6692813.816}}], "ON GRID": [{"name": "GOODWE Kit 3kW on grid ", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "modulos 715W", "precio_unitario": 105690.9512, "cantidad": 6.0, "total": 634145.7073}, {"codigo": null, "descripcion": "GW3000-DNS-30", "precio_unitario": 325389.4737, "cantidad": 1.0, "total": 325389.4737}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 3.0, "total": 54960}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 10.0, "total": 11000}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 2.0, "total": 5000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 12.0, "total": 5952}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 1100742.181, "iva": 1309883.195, "margen": 275185.5453, "total": 1585068.741}}, {"name": "GOODWE Kit 4.2kW on grid ", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "modulos 715W", "precio_unitario": 105690.9512, "cantidad": 6.0, "total": 634145.7073}, {"codigo": "Inversor On Grid Monofásico GoodWe 4.2kW – 2 MPPT", "descripcion": "GW4200-DNS-30", "precio_unitario": 366652.631578947, "cantidad": 1.0, "total": 366652.6316}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 3.0, "total": 54960}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 10.0, "total": 11000}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 2.0, "total": 5000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 12.0, "total": 5952}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 1142005.339, "iva": 1358986.353, "margen": 285501.3347, "total": 1644487.688}}, {"name": "GOODWE Kit 5kW ON-Grid", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "modulos 715W", "precio_unitario": 105690.9512, "cantidad": 9.0, "total": 951218.561}, {"codigo": null, "descripcion": "GW5000-DNS-30", "precio_unitario": 380800, "cantidad": 1.0, "total": 380800}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 5.0, "total": 91600}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 16.0, "total": 17600}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 22.0, "total": 10912}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 1526425.561, "iva": 1816446.418, "margen": 381606.3902, "total": 2198052.808}}, {"name": "GOODWE Kit 6kW ON-Grid", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "modulos 715W", "precio_unitario": 105690.9512, "cantidad": 9.0, "total": 951218.561}, {"codigo": "Inversor On Grid Monofásico GoodWe 6kW – 3 MPPT", "descripcion": "GW6000-MS-30", "precio_unitario": 530526.315789474, "cantidad": 1.0, "total": 530526.3158}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 5.0, "total": 91600}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 16.0, "total": 17600}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 22.0, "total": 10912}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 1676151.877, "iva": 1994620.733, "margen": 419037.9692, "total": 2413658.703}}, {"name": "GOODWE Kit 8.5kW On-Grid ", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "modulos 715W", "precio_unitario": 105690.9512, "cantidad": 14.0, "total": 1479673.317}, {"codigo": null, "descripcion": "GW8500-MS-30", "precio_unitario": 598500, "cantidad": 1.0, "total": 598500}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 7.0, "total": 128240}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 22.0, "total": 24200}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 24.0, "total": 11904}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 8.0, "total": 3968}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 8.0, "total": 5440}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 8.0, "total": 5440}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 2324236.317, "iva": 2765841.217, "margen": 581059.0793, "total": 3346900.297}}, {"name": "GOODWE Kit 10kW On-Grid ", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "modulos 715W", "precio_unitario": 105690.9512, "cantidad": 18.0, "total": 1902437.122}, {"codigo": null, "descripcion": "GW10K-MS-30", "precio_unitario": 637000.0, "cantidad": 1.0, "total": 637000}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 9.0, "total": 164880}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 34.0, "total": 37400}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 6.0, "total": 15000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 30.0, "total": 14880}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 8.0, "total": 3968}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 8.0, "total": 5440}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 8.0, "total": 5440}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 2843316.122, "iva": 3383546.185, "margen": 710829.0305, "total": 4094375.216}}]}, "Huawei": {"HIBRIDOS": [{"name": "HUAWEI Kit 2kW hibrido 5kWh", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 6.0, "total": 634145.7073}, {"codigo": null, "descripcion": "SUN2000 -2KTL-L1", "precio_unitario": 584397.0, "cantidad": 1.0, "total": 584397}, {"codigo": null, "descripcion": "LUNA2000-5-E0 5KWH", "precio_unitario": 1656177.0, "cantidad": 1.0, "total": 1656177}, {"codigo": null, "descripcion": "LUNA2000-5KW-CO", "precio_unitario": 625000.0, "cantidad": 1.0, "total": 625000}, {"codigo": null, "descripcion": "BACKUP BOX-B0", "precio_unitario": 476874.0, "cantidad": 1.0, "total": 476874}, {"codigo": null, "descripcion": "SDongleA-05", "precio_unitario": 63044.0, "cantidad": 1.0, "total": 63044}, {"codigo": null, "descripcion": "DDSU666-H", "precio_unitario": 56485.0, "cantidad": 1.0, "total": 56485}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 3.0, "total": 54960}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 10.0, "total": 11000}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 2.0, "total": 5000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 12.0, "total": 5952}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 4237329.707, "iva": 5042422.352, "margen": 1059332.427, "total": 6101754.779}}, {"name": "HUAWEI Kit 4kW hibrido 5kWh", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 6.0, "total": 634145.7073}, {"codigo": null, "descripcion": "SUN2000 -4KTL-L1", "precio_unitario": 526000.0, "cantidad": 1.0, "total": 526000}, {"codigo": null, "descripcion": "LUNA2000-5-E0 5KWH", "precio_unitario": 1656177.0, "cantidad": 1.0, "total": 1656177}, {"codigo": null, "descripcion": "LUNA2000-5KW-CO", "precio_unitario": 625000.0, "cantidad": 1.0, "total": 625000}, {"codigo": null, "descripcion": "BACKUP BOX-B0", "precio_unitario": 476874.0, "cantidad": 1.0, "total": 476874}, {"codigo": null, "descripcion": "SDongleA-05", "precio_unitario": 63044.0, "cantidad": 1.0, "total": 63044}, {"codigo": null, "descripcion": "DDSU666-H", "precio_unitario": 56485.0, "cantidad": 1.0, "total": 56485}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 3.0, "total": 54960}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 10.0, "total": 11000}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 2.0, "total": 5000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 12.0, "total": 5952}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 4178932.707, "iva": 4972929.922, "margen": 1044733.177, "total": 6017663.099}}, {"name": "HUAWEI Kit 6kW hibrido 5kWh", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 9.0, "total": 951218.561}, {"codigo": null, "descripcion": "SUN2000 -6KTL-L1", "precio_unitario": 822671.0, "cantidad": 1.0, "total": 822671}, {"codigo": null, "descripcion": "LUNA2000-5-E0 5KWH", "precio_unitario": 1656177.0, "cantidad": 1.0, "total": 1656177}, {"codigo": null, "descripcion": "LUNA2000-5KW-CO", "precio_unitario": 625000.0, "cantidad": 1.0, "total": 625000}, {"codigo": null, "descripcion": "BACKUP BOX-B0", "precio_unitario": 476874.0, "cantidad": 1.0, "total": 476874}, {"codigo": null, "descripcion": "SDongleA-05", "precio_unitario": 63044.0, "cantidad": 1.0, "total": 63044}, {"codigo": null, "descripcion": "DDSU666-H", "precio_unitario": 56485.0, "cantidad": 1.0, "total": 56485}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 5.0, "total": 91600}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 16.0, "total": 17600}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 22.0, "total": 10912}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 4845876.561, "iva": 5766593.108, "margen": 1211469.14, "total": 6978062.248}}], "ON GRID": [{"name": "HUAWEI Kit 2kW OnGrid ", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 4.0, "total": 422763.8049}, {"codigo": null, "descripcion": "SUN2000 -2KTL-L1", "precio_unitario": 584397.0, "cantidad": 1.0, "total": 584397}, {"codigo": null, "descripcion": "SDongleA-05", "precio_unitario": 63044.0, "cantidad": 1.0, "total": 63044}, {"codigo": null, "descripcion": "DDSU666-H", "precio_unitario": 56485.0, "cantidad": 1.0, "total": 56485}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 3.0, "total": 54960}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 10.0, "total": 11000}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 12.0, "total": 5952}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 1272896.805, "iva": 1514747.198, "margen": 318224.2012, "total": 1832971.399}}, {"name": "HUAWEI Kit 4kW OnGrid", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 6.0, "total": 634145.7073}, {"codigo": null, "descripcion": "SUN2000 -4KTL-L1", "precio_unitario": 526000.0, "cantidad": 1.0, "total": 526000}, {"codigo": null, "descripcion": "SDongleA-05", "precio_unitario": 63044.0, "cantidad": 1.0, "total": 63044}, {"codigo": null, "descripcion": "DDSU666-H", "precio_unitario": 56485.0, "cantidad": 1.0, "total": 56485}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 3.0, "total": 54960}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 10.0, "total": 11000}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 12.0, "total": 5952}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 1425881.707, "iva": 1696799.232, "margen": 356470.4268, "total": 2053269.659}}, {"name": "HUAWEI Kit 6kW OnGrid", "items": [{"codigo": "TSM NEG21C.20 715Wp", "descripcion": "Trina Solar 715Wp", "precio_unitario": 105690.9512, "cantidad": 9.0, "total": 951218.561}, {"codigo": null, "descripcion": "SUN2000 -6KTL-L1", "precio_unitario": 822671.0, "cantidad": 1.0, "total": 822671}, {"codigo": null, "descripcion": "SDongleA-05", "precio_unitario": 63044.0, "cantidad": 1.0, "total": 63044}, {"codigo": null, "descripcion": "DDSU666-H", "precio_unitario": 56485.0, "cantidad": 1.0, "total": 56485}, {"codigo": null, "descripcion": "Riel 5m", "precio_unitario": 18320, "cantidad": 5.0, "total": 91600}, {"codigo": null, "descripcion": "Fijación Tipo L Madera", "precio_unitario": 1100, "cantidad": 16.0, "total": 17600}, {"codigo": null, "descripcion": "Copla Riel Reforzado", "precio_unitario": 2500, "cantidad": 4.0, "total": 10000}, {"codigo": null, "descripcion": "Clams medio", "precio_unitario": 496, "cantidad": 22.0, "total": 10912}, {"codigo": null, "descripcion": "Clams final", "precio_unitario": 496, "cantidad": 4.0, "total": 1984}, {"codigo": null, "descripcion": "MC4 macho", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "MC4 hembra", "precio_unitario": 680, "cantidad": 4.0, "total": 2720}, {"codigo": null, "descripcion": "Cable solar rojo 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}, {"codigo": null, "descripcion": "Cable solar negro 6mm", "precio_unitario": 947.85, "cantidad": 30.0, "total": 28435.5}], "financials": {"neto": 2087825.561, "iva": 2484512.418, "margen": 521956.3902, "total": 3006468.808}}]}}};
+
+        let activeFilters = {
+            brand: 'all',
+            type: 'all'
+        };
+        let searchQuery = '';
+
+        // Helper: Format Currency
+        function formatCLP(val) {
+            if (val === null || val === undefined) return '-';
+            return '$' + Math.round(val).toLocaleString('de-CH');
+        }
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            renderKits();
+            renderCustomQuote();
+            updateStats();
+        });
+
+        // Tab Switching
+        function switchMainTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-link');
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked button
+            const clickedBtn = Array.from(tabs).find(t => t.getAttribute('onclick').includes(tabId));
+            if (clickedBtn) clickedBtn.classList.add('active');
+
+            if (tabId === 'standard-kits') {
+                document.getElementById('standard-kits-view').style.display = 'block';
+                document.getElementById('custom-quote-view').style.display = 'none';
+            } else {
+                document.getElementById('standard-kits-view').style.display = 'none';
+                document.getElementById('custom-quote-view').style.display = 'block';
+            }
+        }
+
+        // Set Filters
+        function setFilter(type, value) {
+            activeFilters[type] = value;
+            
+            // Update UI class of filter buttons
+            const buttons = document.querySelectorAll(`.btn-filter[data-filter-type="${type}"]`);
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            const selectedBtn = Array.from(buttons).find(btn => btn.getAttribute('data-filter-val') === value);
+            if (selectedBtn) selectedBtn.classList.add('active');
+            
+            renderKits();
+        }
+
+        // Search Input handler
+        function handleSearch() {
+            searchQuery = document.getElementById('search-bar').value.toLowerCase().trim();
+            renderKits();
+        }
+
+        // Compute overall count stats
+        function updateStats() {
+            let total = 0;
+            let ongrid = 0;
+            let hybrid = 0;
+
+            Object.keys(KITS_DATA.detailed).forEach(brand => {
+                Object.keys(KITS_DATA.detailed[brand]).forEach(type => {
+                    const list = KITS_DATA.detailed[brand][type];
+                    total += list.length;
+                    if (type === 'ON GRID') {
+                        ongrid += list.length;
+                    } else if (type === 'HIBRIDOS') {
+                        hybrid += list.length;
+                    }
+                });
+            });
+
+            document.getElementById('stat-total-kits').innerText = total;
+            document.getElementById('stat-total-ongrid').innerText = ongrid;
+            document.getElementById('stat-total-hybrid').innerText = hybrid;
+        }
+
+        // Filter and Render Cards
+        function renderKits() {
+            const grid = document.getElementById('kits-grid-container');
+            grid.innerHTML = '';
+            
+            let matchedKits = [];
+
+            // Compile all kits matching filters and search
+            Object.keys(KITS_DATA.detailed).forEach(brand => {
+                if (activeFilters.brand !== 'all' && activeFilters.brand !== brand) return;
+
+                Object.keys(KITS_DATA.detailed[brand]).forEach(type => {
+                    if (activeFilters.type !== 'all' && activeFilters.type !== type) return;
+
+                    const list = KITS_DATA.detailed[brand][type];
+                    list.forEach(kit => {
+                        // Search matches name or items
+                        const matchesName = kit.name.toLowerCase().includes(searchQuery);
+                        const matchesItem = kit.items.some(item => 
+                            (item.descripcion && item.descripcion.toLowerCase().includes(searchQuery)) ||
+                            (item.codigo && item.codigo.toLowerCase().includes(searchQuery))
+                        );
+
+                        if (searchQuery === '' || matchesName || matchesItem) {
+                            matchedKits.push({
+                                ...kit,
+                                brand: brand,
+                                type: type
+                            });
+                        }
+                    });
+                });
+            });
+
+            if (matchedKits.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-results">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <h3>No se encontraron kits</h3>
+                        <p>Intenta ajustar tus filtros o búsqueda.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            matchedKits.forEach(kit => {
+                const card = document.createElement('div');
+                card.className = `kit-card ${kit.brand.toLowerCase()}`;
+                
+                const typeClass = kit.type === 'ON GRID' ? 'on-grid' : 'hybrid';
+                const typeLabel = kit.type === 'ON GRID' ? 'On Grid' : 'Híbrido';
+                const brandBadge = `<span class="brand-badge ${kit.brand.toLowerCase()}">${kit.brand}</span>`;
+                const typeBadge = `<span class="type-badge ${typeClass}">${typeLabel}</span>`;
+                
+                // Extract power info
+                const power = kit.name.replace("GOODWE Kit", "").replace("HUAWEI Kit", "").trim();
+
+                // Find panel and inverter details
+                const panel = kit.items.find(i => i.descripcion && i.descripcion.toLowerCase().includes('panel') || i.descripcion && i.descripcion.toLowerCase().includes('modulo'));
+                const inverter = kit.items.find(i => i.descripcion && i.descripcion.toLowerCase().includes('inversor') || i.descripcion && i.descripcion.toLowerCase().includes('sun2000') || i.descripcion && i.descripcion.toLowerCase().includes('gw'));
+                const battery = kit.items.find(i => i.descripcion && i.descripcion.toLowerCase().includes('bateria') || i.descripcion && i.descripcion.toLowerCase().includes('luna2000') || i.descripcion && i.descripcion.toLowerCase().includes('lynx') || i.descripcion && i.descripcion.toLowerCase().includes('batería'));
+
+                const panelText = panel ? `${panel.cantidad}x ${panel.descripcion}` : 'No especificado';
+                const inverterText = inverter ? inverter.descripcion : 'No especificado';
+                const batteryText = battery && parseFloat(battery.cantidad) > 0 ? `${battery.cantidad}x ${battery.descripcion}` : 'Sin Baterías';
+
+                card.innerHTML = `
+                    <div>
+                        <div class="card-header">
+                            ${brandBadge}
+                            ${typeBadge}
+                        </div>
+                        <h3 class="kit-title">${power}</h3>
+                        
+                        <div class="kit-specs">
+                            <div class="spec-item">
+                                <i class="fa-solid fa-solar-panel"></i>
+                                <span>${panelText}</span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fa-solid fa-bolt"></i>
+                                <span>${inverterText}</span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fa-solid fa-battery-three-quarters"></i>
+                                <span>${batteryText}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="price-divider"></div>
+                        <div class="price-container">
+                            <div class="price-row">
+                                <span>Subtotal Neto:</span>
+                                <span>${formatCLP(kit.financials.neto)}</span>
+                            </div>
+                            <div class="price-row">
+                                <span>Subtotal c/IVA:</span>
+                                <span>${formatCLP(kit.financials.iva)}</span>
+                            </div>
+                            <div class="price-row total-row">
+                                <span>Total Público:</span>
+                                <span class="price-val">${formatCLP(kit.financials.total)}</span>
+                            </div>
+                        </div>
+                        <button class="btn-details" onclick="openDetails('${kit.brand}', '${kit.type}', '${kit.name.replace(/'/g, "\'")}')">
+                            <i class="fa-solid fa-circle-info"></i> Ver Desglose
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Render Custom Quote panel
+        function renderCustomQuote() {
+            const tbody = document.getElementById('quote-table-body');
+            tbody.innerHTML = '';
+            
+            KITS_DATA.custom_quote.items.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.categoria || '-'}</strong></td>
+                    <td><code>${item.modelo_catalogo || '-'}</code></td>
+                    <td>${item.marca || '-'}</td>
+                    <td>${item.descripcion || '-'}</td>
+                    <td style="text-align: right;">${formatCLP(item.valor_unitario)}</td>
+                    <td style="text-align: center;">${item.cantidad}</td>
+                    <td style="text-align: right; color: var(--text-primary); font-weight: 500;">${formatCLP(item.total)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('quote-net-val').innerText = formatCLP(KITS_DATA.custom_quote.neto);
+            document.getElementById('quote-iva-val').innerText = formatCLP(KITS_DATA.custom_quote.iva);
+            document.getElementById('quote-total-val').innerText = formatCLP(KITS_DATA.custom_quote.total);
+        }
+
+        // Open Dialog Modal with Kit details
+        function openDetails(brand, type, name) {
+            const kit = KITS_DATA.detailed[brand][type].find(k => k.name === name);
+            if (!kit) return;
+
+            document.getElementById('modal-kit-name').innerText = kit.name;
+            const categoryBadge = document.getElementById('modal-kit-badge');
+            categoryBadge.className = `brand-badge ${brand.toLowerCase()}`;
+            categoryBadge.innerText = `${brand} - ${type === 'ON GRID' ? 'On Grid' : 'Híbrido'}`;
+
+            // Render table rows
+            const tbody = document.getElementById('modal-table-body');
+            tbody.innerHTML = '';
+            
+            kit.items.forEach(item => {
+                if (!item.descripcion && !item.total) return;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><code>${item.codigo || '-'}</code></td>
+                    <td>${item.descripcion || '-'}</td>
+                    <td style="text-align: right;">${formatCLP(item.precio_unitario)}</td>
+                    <td style="text-align: center;">${item.cantidad}</td>
+                    <td style="text-align: right; color: var(--text-primary);">${formatCLP(item.total)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Set financials
+            document.getElementById('modal-neto').innerText = formatCLP(kit.financials.neto);
+            document.getElementById('modal-subtotal-iva').innerText = formatCLP(kit.financials.iva);
+            document.getElementById('modal-margen').innerText = formatCLP(kit.financials.margen);
+            document.getElementById('modal-total').innerText = formatCLP(kit.financials.total);
+
+            // Update interactive system diagram
+            const hasBattery = kit.items.some(i => i.descripcion && (i.descripcion.toLowerCase().includes('bateria') || i.descripcion.toLowerCase().includes('batería') || i.descripcion.toLowerCase().includes('luna2000') || i.descripcion.toLowerCase().includes('lynx')) && parseFloat(i.cantidad) > 0);
+            
+            const batteryNode = document.getElementById('diag-battery-node');
+            const line2 = document.getElementById('diag-line-2');
+            
+            if (hasBattery) {
+                batteryNode.classList.add('active');
+                line2.classList.add('active-2');
+            } else {
+                batteryNode.classList.remove('active');
+                line2.classList.remove('active-2');
+            }
+
+            // Show Dialog Modal
+            const modal = document.getElementById('details-modal');
+            modal.showModal();
+        }
+
+        // Close Modal
+        function closeModal() {
+            const modal = document.getElementById('details-modal');
+            modal.close();
+        }
+    </script>
+</body>
+</html>
