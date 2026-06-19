@@ -999,7 +999,8 @@ function doPost(e) {
       const subject = `Cotización Formal - ${subjectType} - Oferta N° ${data.offerCode || ""}`;
       const mailOptions = {
         htmlBody: data.emailHtml,
-        name: "IA Patagonia"
+        name: "IA Patagonia",
+        replyTo: CONFIG.EMAIL_NOTIFICACIONES
       };
       
       if (CONFIG.EMAIL_NOTIFICACIONES) {
