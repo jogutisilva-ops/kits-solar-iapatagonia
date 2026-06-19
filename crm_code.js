@@ -898,3 +898,133 @@ function parsearFechaEsp(fechaStr) {
   const result = new Date(anio, mes, dia, horas, minutos, 0);
   return isNaN(result.getTime()) ? "" : result;
 }
+
+// ==========================================
+// WEBHOOK ENDPOINT: Registro de Leads y Envío de Emails desde el Cotizador Web
+// ==========================================
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    
+    if (data.action === "send_quote") {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheet = ss.getSheetByName(CONFIG.NOMBRE_HOJA_CRM);
+      if (!sheet) {
+        throw new Error("No se encontró la hoja con nombre " + CONFIG.NOMBRE_HOJA_CRM);
+      }
+      
+      const lastRow = sheet.getLastRow();
+      // Encontrar la última fila real con datos (por si hay filas con fórmulas)
+      let ultimaFilaReal = 1;
+      const valoresCliente = sheet.getRange(1, COL.NOMBRE_CLIENTE, lastRow, 1).getValues();
+      for (let i = valoresCliente.length - 1; i >= 0; i--) {
+        if (valoresCliente[i][0] && valoresCliente[i][0].toString().trim() !== "") {
+          ultimaFilaReal = i + 1;
+          break;
+        }
+      }
+      
+      const targetRow = ultimaFilaReal + 1;
+      const idLead = "L-" + Utilities.formatDate(new Date(), CONFIG.ZONA_HORARIA, "yyMMdd-HHmmss");
+      
+      const email = data.email || "";
+      const nombre = data.name || "Cliente Web";
+      const telefono = data.phone || "";
+      const direccion = data.address || "Web Cotizador";
+      const totalQuote = data.grandTotal ? Number(data.grandTotal) : 0;
+      
+      const row = [];
+      row.push(idLead); // Col A: ID de Lead
+      row.push(new Date()); // Col B: Fecha de Ingreso
+      row.push(nombre); // Col C: Nombre
+      row.push(telefono); // Col D: Teléfono
+      row.push(email); // Col E: Correo
+      row.push(direccion); // Col F: Ciudad/Localidad (Dirección del proyecto)
+      row.push("Sitio Web"); // Col G: Origen
+      row.push(""); // Col H: Vendedor (Vacio por defecto)
+      row.push(data.invType === 'HIBRIDO' ? 'Híbrido' : 'On-Grid'); // Col I: Sistema
+      row.push(`Kit ${data.powerKWp ? data.powerKWp.toFixed(2) : ""}kWp`); // Col J: Selección de Kit
+      row.push(""); // Col K: Boleta Promedio
+      row.push(ETAPAS.LEAD_NUEVO); // Col L: Etapa Actual
+      row.push(""); // Col M: Motivo Pérdida
+      row.push(new Date()); // Col N: Último Contacto
+      row.push("Seguimiento de Propuesta"); // Col O: Siguiente Acción
+      row.push(""); // Col P: Fecha Acción
+      row.push("Correo"); // Col Q: Canal Común
+      row.push(""); // Col R: Estado de Alerta (Fórmula)
+      row.push(totalQuote); // Col S: Valor Cotización
+      row.push(`Cotización web formalizada. Oferta N° ${data.offerCode || ""}. Dirección: ${direccion}. Distancia flete: ${data.distance || 0} km.`); // Col T: Observaciones
+      row.push(""); // Col U: ID Evento Calendar
+      
+      // Escribir fila en la hoja
+      sheet.getRange(targetRow, 1, 1, row.length).setValues([row]);
+      
+      // Aplicar validaciones y formatos en la fila nueva
+      configurarDesplegable(sheet, COL.ORIGEN, LISTAS.ORIGEN, 1, targetRow);
+      configurarDesplegable(sheet, COL.VENDEDOR, LISTAS.VENDEDOR, 1, targetRow);
+      configurarDesplegable(sheet, COL.SISTEMA, LISTAS.SISTEMA, 1, targetRow);
+      configurarDesplegable(sheet, COL.KIT, LISTAS.KIT, 1, targetRow);
+      configurarDesplegable(sheet, COL.ETAPA, LISTAS.ETAPA, 1, targetRow);
+      configurarDesplegable(sheet, COL.MOTIVO_PERDIDA, LISTAS.MOTIVO_PERDIDA, 1, targetRow);
+      configurarDesplegable(sheet, COL.SIG_ACCION, LISTAS.SIG_ACCION, 1, targetRow);
+      configurarDesplegable(sheet, COL.CANAL_COMUN, LISTAS.CANAL_COMUN, 1, targetRow);
+      
+      configurarValidacionFecha(sheet, COL.FECHA_INGRESO, 1, targetRow);
+      configurarValidacionFecha(sheet, COL.ULTIMO_CONTACTO, 1, targetRow);
+      configurarValidacionFecha(sheet, COL.FECHA_ACCION, 1, targetRow);
+      
+      sheet.getRange(targetRow, COL.FECHA_INGRESO).setNumberFormat("dd-mm-yyyy");
+      sheet.getRange(targetRow, COL.ULTIMO_CONTACTO).setNumberFormat("dd-mm-yyyy hh:mm");
+      sheet.getRange(targetRow, COL.FECHA_ACCION).setNumberFormat("dd-mm-yyyy hh:mm");
+      sheet.getRange(targetRow, COL.BOLETA_PROM).setNumberFormat("$#,##0");
+      sheet.getRange(targetRow, COL.COTIZACION).setNumberFormat("$#,##0");
+      
+      autoFormatearEnlaceWhatsapp(sheet.getRange(targetRow, COL.TELEFONO));
+      
+      // Semáforo dinámico de Alerta para esta fila
+      const formulaAlerta =
+        `=IF($L${targetRow}="","",IFS(` +
+        `$L${targetRow}="${ETAPAS.PERDIDO}","⚪ CERRADO",` +
+        `$L${targetRow}="${ETAPAS.GANADO_CONECTADO}","🟢 EN VIVO",` +
+        `$P${targetRow}="","⚪ SIN ACCIÓN",` +
+        `INT($P${targetRow})<TODAY(),"🔴 ATRASADO",` +
+        `INT($P${targetRow})=TODAY(),"🟡 HOY",` +
+        `INT($P${targetRow})>TODAY(),"🔵 FUTURO",` +
+        `TRUE,"⚪ SIN ACCIÓN"))`;
+      sheet.getRange(targetRow, COL.ESTADO_ALERTA).setFormula(formulaAlerta);
+      
+      // Enviar correo real
+      const subject = `Cotización Formal - Proyecto Solar Fotovoltaico Llave en Mano - Oferta N° ${data.offerCode || ""}`;
+      const mailOptions = {
+        htmlBody: data.emailHtml,
+        name: "IA Patagonia"
+      };
+      
+      if (CONFIG.EMAIL_NOTIFICACIONES) {
+        mailOptions.bcc = CONFIG.EMAIL_NOTIFICACIONES; // BCC al admin
+      }
+      
+      MailApp.sendEmail(email, subject, "", mailOptions);
+      
+      const responseObj = {
+        status: "success",
+        leadId: idLead,
+        message: "Cotización enviada y Lead registrado correctamente."
+      };
+      
+      return ContentService.createTextOutput(JSON.stringify(responseObj))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: "Acción no reconocida."
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}

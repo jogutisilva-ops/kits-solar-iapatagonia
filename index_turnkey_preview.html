@@ -1564,39 +1564,20 @@
                                     <option value="TECHO">Sobre Techo (Estructura Aluminio standard)</option>
                                     <option value="SUELO">Sobre Suelo (Ajustable + Apoyos Hormigón)</option>
                                 </select>
-                                                <!-- Ubicación y Distancia -->
-                            <div id="location-picker-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
-                                <!-- Google Maps Autocomplete (se muestra si hay API Key) -->
-                                <div id="calc-maps-group" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Dirección Específica (para Google Maps):</label>
-                                    <div style="position: relative; display: flex; align-items: center;">
-                                        <span style="position: absolute; left: 12px; color: var(--text-secondary); font-size: 0.9rem;"><i class="fa-solid fa-location-dot"></i></span>
-                                        <input type="text" id="calc-project-address" placeholder="Ingresa tu calle, número y ciudad..." style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem 0.6rem 2.2rem; border-radius: 10px; font-size: 0.9rem; outline: none; width: 100%;">
-                                    </div>
-                                </div>
+                            </div>
 
-                                <!-- Comuna Dropdown (se muestra como fallback si NO hay API Key o falla) -->
-                                <div id="calc-comuna-group" style="display: none; flex-direction: column; gap: 0.4rem;">
-                                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Ubicación del Proyecto (Comuna/Ciudad):</label>
-                                    <select id="calc-project-location" onchange="updateFallbackDistance(); recalculateQuote();" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none;">
-                                        <option value="puerto-montt">Puerto Montt (Urbano)</option>
-                                        <option value="puerto-varas">Puerto Varas</option>
-                                        <option value="calbuco">Calbuco / Frutillar / Llanquihue</option>
-                                        <option value="osorno">Osorno / Purranque</option>
-                                        <option value="ancud">Ancud (Chiloé)</option>
-                                        <option value="castro">Castro / Chonchi (Chiloé)</option>
-                                        <option value="valdivia" selected>Valdivia (Región Los Ríos)</option>
-                                        <option value="temuco">Temuco (Región Araucanía)</option>
-                                    </select>
-                                </div>
-
-                                <!-- Distancia Resultante -->
-                                <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: -0.5rem;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Distancia de Flete (desde Pto. Montt):</label>
-                                        <span id="calc-distance-display" style="font-size: 0.9rem; font-weight: 700; color: var(--brand-celeste);">220 km (Valdivia)</span>
-                                    </div>
-                                </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Ubicación del Proyecto (Flete):</label>
+                                <select id="calc-project-location" onchange="recalculateQuote()" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none;">
+                                    <option value="puerto-montt">Puerto Montt (Urbano)</option>
+                                    <option value="puerto-varas">Puerto Varas</option>
+                                    <option value="calbuco">Calbuco / Frutillar / Llanquihue</option>
+                                    <option value="osorno">Osorno / Purranque</option>
+                                    <option value="ancud">Ancud (Chiloé)</option>
+                                    <option value="castro">Castro / Chonchi (Chiloé)</option>
+                                    <option value="valdivia" selected>Valdivia (Región Los Ríos)</option>
+                                    <option value="temuco">Temuco (Región Araucanía)</option>
+                                </select>
                             </div>
                         </div>
 
@@ -1606,14 +1587,12 @@
                                 <i class="fa-solid fa-envelope" style="color: var(--brand-celeste);"></i> Recibe la Cotización Completa:
                             </label>
                             <div style="display: flex; flex-direction: column; gap: 0.8rem;">
-                                <input type="text" id="calc-client-name" placeholder="Tu Nombre Completo" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none; width: 100%;">
-                                <input type="tel" id="calc-client-phone" placeholder="Tu Teléfono (ej: +56912345678)" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none; width: 100%;">
                                 <input type="email" id="calc-client-email" placeholder="ejemplo@correo.com" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none; width: 100%;">
                                 <button id="btn-send-quote" onclick="sendQuoteByEmail()" style="width: 100%; background: var(--brand-amarillo); color: #171717; border: none; padding: 0.8rem; border-radius: 12px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(230, 226, 71, 0.25);">
                                     <i class="fa-solid fa-paper-plane"></i> Enviar Cotización Detallada
                                 </button>
                             </div>
-                        </div>                   </div>
+                        </div>
                     </div>
 
                     <!-- Right Column: Results -->
@@ -2708,130 +2687,6 @@
             }
         }
 
-        // Configuración Global de la Aplicación (Google Maps y Google Apps Script Web App)
-        const CONFIG_APP = {
-            // URL de la Web App de Apps Script (doPost) para registro de leads y envío de correos reales.
-            // Pega aquí la URL que te entregue Google Sheets al publicar.
-            APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwPqOqGfE1aD_iY84w165s4j-Jj_9P929w/exec", 
-            
-            // API Key de Google Maps. Deja vacío ("") para desactivar y usar fallback automático de Comunas.
-            GOOGLE_MAPS_KEY: "", 
-            
-            // Dirección base para origen de flete
-            ORIGEN_BASE: "Puerto Montt, Región de Los Lagos, Chile",
-            ORIGEN_LATLNG: { lat: -41.4689, lng: -72.9411 }
-        };
-
-        let googleMapsLoaded = false;
-        let googleDistance = 0; // en km, calculada terrestre
-        let selectedAddressName = '';
-
-        function loadGoogleMapsScript() {
-            const key = CONFIG_APP.GOOGLE_MAPS_KEY;
-            const mapsGroup = document.getElementById('calc-maps-group');
-            const comunaGroup = document.getElementById('calc-comuna-group');
-            
-            if (!key || key.trim() === "" || key.includes("API_KEY")) {
-                console.log("Google Maps Key no configurada. Usando selector de comunas.");
-                if (mapsGroup) mapsGroup.style.display = 'none';
-                if (comunaGroup) comunaGroup.style.display = 'flex';
-                updateFallbackDistance();
-                return;
-            }
-            
-            // Callback global para cuando Google Maps se cargue
-            window.initGoogleMaps = function() {
-                googleMapsLoaded = true;
-                initMapsAutocomplete();
-            };
-            
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places,geometry&callback=initGoogleMaps`;
-            script.async = true;
-            script.defer = true;
-            script.onerror = function() {
-                console.error("Error al cargar Google Maps script. Usando fallback de comunas.");
-                if (mapsGroup) mapsGroup.style.display = 'none';
-                if (comunaGroup) comunaGroup.style.display = 'flex';
-                updateFallbackDistance();
-            };
-            document.head.appendChild(script);
-        }
-
-        function initMapsAutocomplete() {
-            const input = document.getElementById('calc-project-address');
-            if (!input) return;
-            
-            const autocomplete = new google.maps.places.Autocomplete(input, {
-                types: ['address'],
-                componentRestrictions: { country: 'cl' }
-            });
-            
-            autocomplete.addListener('place_changed', () => {
-                const place = autocomplete.getPlace();
-                if (!place.geometry) {
-                    console.warn("Dirección seleccionada no contiene coordenadas.");
-                    return;
-                }
-                
-                selectedAddressName = place.formatted_address || place.name;
-                calculateDrivingDistance(place.geometry.location);
-            });
-        }
-
-        function calculateDrivingDistance(destLatLng) {
-            const display = document.getElementById('calc-distance-display');
-            if (display) display.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Calculando...';
-            
-            const service = new google.maps.DistanceMatrixService();
-            service.getDistanceMatrix({
-                origins: [CONFIG_APP.ORIGEN_BASE],
-                destinations: [destLatLng],
-                travelMode: 'DRIVING',
-                unitSystem: google.maps.UnitSystem.METRIC
-            }, (response, status) => {
-                if (status === 'OK' && response.rows[0].elements[0].status === 'OK') {
-                    const element = response.rows[0].elements[0];
-                    const distKm = element.distance.value / 1000;
-                    googleDistance = Math.round(distKm * 10) / 10;
-                    if (display) {
-                        display.innerText = `${googleDistance} km (${selectedAddressName.split(',')[0]})`;
-                    }
-                    recalculateQuote();
-                } else {
-                    console.warn("Distance Matrix falló:", status);
-                    // Fallback geodésico si falla la ruta terrestre
-                    const baseLatLng = new google.maps.LatLng(CONFIG_APP.ORIGEN_LATLNG.lat, CONFIG_APP.ORIGEN_LATLNG.lng);
-                    const meters = google.maps.geometry.spherical.computeDistanceBetween(baseLatLng, destLatLng);
-                    const estKm = Math.round((meters / 1000) * 1.3); // +30% factor de sinuosidad terrestre
-                    googleDistance = estKm;
-                    if (display) {
-                        display.innerText = `${googleDistance} km (Est. lineal + 30%)`;
-                    }
-                    recalculateQuote();
-                }
-            });
-        }
-
-        function updateFallbackDistance() {
-            const locationVal = document.getElementById('calc-project-location').value;
-            let dist = 220;
-            let label = "Valdivia";
-            if (locationVal === 'puerto-montt') { dist = 15; label = "Puerto Montt (Urbano)"; }
-            else if (locationVal === 'puerto-varas') { dist = 25; label = "Puerto Varas"; }
-            else if (locationVal === 'calbuco') { dist = 50; label = "Calbuco/Frutillar/Llanquihue"; }
-            else if (locationVal === 'osorno') { dist = 110; label = "Osorno/Purranque"; }
-            else if (locationVal === 'ancud') { dist = 90; label = "Ancud"; }
-            else if (locationVal === 'castro') { dist = 170; label = "Castro/Chonchi"; }
-            else if (locationVal === 'valdivia') { dist = 220; label = "Valdivia"; }
-            else if (locationVal === 'temuco') { dist = 350; label = "Temuco"; }
-            
-            googleDistance = dist;
-            selectedAddressName = label;
-            const display = document.getElementById('calc-distance-display');
-            if (display) display.innerText = `${dist} km (${label})`;
-        }
-
         let activeFilters = {
             brand: 'all',
             type: 'all'
@@ -2849,7 +2704,6 @@
             renderKits();
             initCalculator();
             updateStats();
-            loadGoogleMapsScript();
         });
 
         // Tab Switching
@@ -3230,26 +3084,16 @@
             const projectMode = document.getElementById('calc-project-mode').value;
             const mountType = document.getElementById('calc-mount-type') ? document.getElementById('calc-mount-type').value : 'TECHO';
             
+            const locationVal = document.getElementById('calc-project-location') ? document.getElementById('calc-project-location').value : 'valdivia';
             let distance = 220;
-            let locationName = "Valdivia";
-            
-            if (googleMapsLoaded && googleDistance > 0) {
-                distance = googleDistance;
-                locationName = selectedAddressName || "Dirección Seleccionada";
-            } else {
-                const locationVal = document.getElementById('calc-project-location') ? document.getElementById('calc-project-location').value : 'valdivia';
-                const locationSelect = document.getElementById('calc-project-location');
-                locationName = locationSelect ? locationSelect.options[locationSelect.selectedIndex].text : 'Valdivia';
-                
-                if (locationVal === 'puerto-montt') distance = 15;
-                else if (locationVal === 'puerto-varas') distance = 25;
-                else if (locationVal === 'calbuco') distance = 50;
-                else if (locationVal === 'osorno') distance = 110;
-                else if (locationVal === 'ancud') distance = 90;
-                else if (locationVal === 'castro') distance = 170;
-                else if (locationVal === 'valdivia') distance = 220;
-                else if (locationVal === 'temuco') distance = 350;
-            }
+            if (locationVal === 'puerto-montt') distance = 15;
+            else if (locationVal === 'puerto-varas') distance = 25;
+            else if (locationVal === 'calbuco') distance = 50;
+            else if (locationVal === 'osorno') distance = 110;
+            else if (locationVal === 'ancud') distance = 90;
+            else if (locationVal === 'castro') distance = 170;
+            else if (locationVal === 'valdivia') distance = 220;
+            else if (locationVal === 'temuco') distance = 350;
 
             const mdoRate = 193278; // fixed internal labor cost rate
             const marginPct = 25;   // fixed internal global margin
@@ -3637,7 +3481,7 @@
                 bomFull.push({
                     categoria: "Servicios",
                     codigo: "Servicio-Flete",
-                    descripcion: `Flete: Puerto Montt → ${locationName.toUpperCase()} (equipos + materiales)`,
+                    descripcion: `Flete: Puerto Montt → ${locationVal.toUpperCase()} (equipos + materiales)`,
                     precio_unitario: fletePrice,
                     cantidad: 1,
                     total: fletePrice
@@ -3712,7 +3556,6 @@
         }
 
         // Email preview trigger
-        // Email preview trigger and real POST sender
         function sendQuoteByEmail() {
             const emailInput = document.getElementById('calc-client-email');
             const email = emailInput ? emailInput.value.trim() : '';
@@ -3722,125 +3565,23 @@
                 return;
             }
 
+            // Populate the modal fields
+            document.getElementById('preview-email-dest').innerText = email;
+            document.getElementById('email-header-to').innerText = email;
+            
             // Random offer number generator
             const dateStr = new Date().toISOString().substring(2, 10).replace(/-/g, "");
             const randomId = Math.floor(100 + Math.random() * 900);
             const offerCode = `${dateStr}IAP${randomId}`;
+            document.getElementById('email-header-offer').innerText = offerCode;
 
             // Compile the HTML email template
             const emailHtml = generateEmailHtml(email, offerCode);
+            document.getElementById('email-body-content').innerHTML = emailHtml;
 
-            // Calculate totals
-            let net = 0;
-            globalBomFull.forEach(item => { net += item.total; });
-            const iva = Math.round(net * 0.19);
-            const grandTotal = net + iva;
-
-            const payload = {
-                action: "send_quote",
-                email: email,
-                name: document.getElementById('calc-client-name').value.trim() || "Cliente Web",
-                phone: document.getElementById('calc-client-phone').value.trim() || "",
-                address: googleMapsLoaded && googleDistance > 0 ? selectedAddressName : (document.getElementById('calc-project-location') ? document.getElementById('calc-project-location').options[document.getElementById('calc-project-location').selectedIndex].text : "Valdivia"),
-                distance: googleDistance || 0,
-                projectMode: document.getElementById('calc-project-mode').value,
-                mountType: document.getElementById('calc-mount-type') ? document.getElementById('calc-mount-type').value : 'TECHO',
-                brand: document.getElementById('calc-brand').value,
-                invType: document.getElementById('calc-inv-type').value,
-                invModel: document.getElementById('calc-inverter').value,
-                invQty: parseInt(document.getElementById('calc-inv-qty').value) || 1,
-                batModel: document.getElementById('calc-battery-model').value || "",
-                batQty: parseInt(document.getElementById('calc-bat-qty').value) || 0,
-                panelModel: document.getElementById('calc-panel-model').value,
-                panelQty: parseInt(document.getElementById('calc-panel-qty').value) || 0,
-                powerKWp: ((parseInt(document.getElementById('calc-panel-qty').value) || 0) * 715) / 1000,
-                netTotal: net,
-                iva: iva,
-                grandTotal: grandTotal,
-                emailHtml: emailHtml,
-                offerCode: offerCode
-            };
-
-            const btn = document.getElementById('btn-send-quote');
-            const originalText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
-
-            const isConfigured = CONFIG_APP.APPS_SCRIPT_URL && 
-                                 CONFIG_APP.APPS_SCRIPT_URL.trim() !== "" && 
-                                 !CONFIG_APP.APPS_SCRIPT_URL.includes("NUESTRO_ID") &&
-                                 !CONFIG_APP.APPS_SCRIPT_URL.includes("NUEVA_URL"); // check for placeholder
-
-            if (!isConfigured) {
-                // Simulated success fallback
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                    
-                    console.log("Apps Script Web App no configurado. Abriendo simulación de correo.");
-                    
-                    document.getElementById('preview-email-dest').innerText = email;
-                    document.getElementById('email-header-to').innerText = email;
-                    document.getElementById('email-header-offer').innerText = offerCode;
-                    document.getElementById('email-body-content').innerHTML = emailHtml;
-                    
-                    const titleDesc = document.querySelector('.modal-title');
-                    if (titleDesc) titleDesc.innerHTML = '<i class="fa-solid fa-circle-info" style="color: var(--brand-celeste);"></i> Simulación de Cotización';
-                    
-                    const modal = document.getElementById('email-preview-modal');
-                    modal.showModal();
-                }, 800);
-                return;
-            }
-
-            // Perform real connection to Apps Script Web App
-            fetch(CONFIG_APP.APPS_SCRIPT_URL, {
-                method: "POST",
-                mode: "cors",
-                body: JSON.stringify(payload)
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("HTTP error " + res.status);
-                return res.json();
-            })
-            .then(result => {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-                
-                if (result.status === "success") {
-                    document.getElementById('preview-email-dest').innerText = email;
-                    document.getElementById('email-header-to').innerText = email;
-                    document.getElementById('email-header-offer').innerText = offerCode;
-                    document.getElementById('email-body-content').innerHTML = emailHtml;
-                    
-                    const titleDesc = document.querySelector('.modal-title');
-                    if (titleDesc) titleDesc.innerHTML = '<i class="fa-solid fa-circle-check"></i> ¡Cotización Enviada con Éxito!';
-                    
-                    const modal = document.getElementById('email-preview-modal');
-                    modal.showModal();
-                } else {
-                    alert("Error del servidor: " + result.message);
-                }
-            })
-            .catch(err => {
-                console.error("Error al conectar con Apps Script:", err);
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-                
-                // Connection failed (CORS, offline, block), fallback to simulation preview
-                alert("No se pudo conectar con el servidor de correos. Abriendo simulación de propuesta.");
-                
-                document.getElementById('preview-email-dest').innerText = email;
-                document.getElementById('email-header-to').innerText = email;
-                document.getElementById('email-header-offer').innerText = offerCode;
-                document.getElementById('email-body-content').innerHTML = emailHtml;
-                
-                const titleDesc = document.querySelector('.modal-title');
-                if (titleDesc) titleDesc.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color: var(--goodwe-color);"></i> Simulación (Servidor Offline)';
-                
-                const modal = document.getElementById('email-preview-modal');
-                modal.showModal();
-            });
+            // Show the Email modal
+            const modal = document.getElementById('email-preview-modal');
+            modal.showModal();
         }
 
         function closeEmailModal() {
@@ -3856,13 +3597,8 @@
             const panelQty = parseInt(document.getElementById('calc-panel-qty').value);
             const projectMode = document.getElementById('calc-project-mode').value;
             const mountType = document.getElementById('calc-mount-type') ? document.getElementById('calc-mount-type').value : 'TECHO';
-            let locationText = "Valdivia";
-            if (googleMapsLoaded && googleDistance > 0) {
-                locationText = selectedAddressName || "Dirección Seleccionada";
-            } else {
-                const locationSelect = document.getElementById('calc-project-location');
-                locationText = locationSelect ? locationSelect.options[locationSelect.selectedIndex].text : 'Valdivia';
-            }
+            const locationSelect = document.getElementById('calc-project-location');
+            const locationText = locationSelect ? locationSelect.options[locationSelect.selectedIndex].text : 'Valdivia';
 
             const powerKWp = (panelQty * 715) / 1000;
 

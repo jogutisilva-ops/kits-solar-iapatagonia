@@ -1,13 +1,9 @@
-# Lista de Tareas: Cotizador Solar Interactivo - IA Patagonia
+# Lista de Tareas: Cotizador Turnkey con Envío de Correo y Ofuscación de Costos
 
-- [x] Modificar `generate_html.py` para reemplazar el panel de cotización personalizado estático con una interfaz interactiva de dos columnas
-- [x] Implementar la base de datos de precios y la lógica de cálculo dinámico en Javascript (con cálculo automático de estructuras y accesorios de marca)
-- [x] Ejecutar `generate_html.py` para regenerar `index.html`
-- [x] Sincronizar `index.html` en el directorio de artefactos
-- [x] Subir los cambios a GitHub (git commit y push)
-- [x] Verificar el cotizador interactivo en producción (Vercel)
-- [x] Ocultar desglose de margen del distribuidor (25%) e integrarlo directamente en los valores netos e IVA en la UI y el cotizador
-- [x] Corregir la discrepancia de precios utilizando el factor de conversión 1.44/1.19 para coincidir exactamente con los totales del Excel (ej: $1.585.069 para 3kW on grid)
-- [x] Eliminar recuadro del 25% de margen del dashboard en la UI
-- [x] Pre-calcular precios con margen en Python y remover cualquier fórmula o factor de margen en el JavaScript cliente para evitar inspecciones
-- [x] Renombrar 'Neto (c/margen)' a 'Neto' en toda la interfaz para ocultar rastros de reventa
+- [x] Modificar la lógica de generación del HTML en `generate_turnkey_preview.py` para aplicar las nuevas reglas de negocio
+- [x] Ocultar de la UI del cotizador los ítems que no sean inversores, paneles o baterías
+- [x] Reemplazar controles de Margen y MDO por lógica interna, y el slider de flete por un selector de comunas
+- [x] Añadir campo de entrada de email y botón de solicitud de cotización
+- [x] Diseñar el modal premium con la pestaña interactiva para ver la vista previa del correo HTML (marca IA Patagonia)
+- [x] Compilar y generar `index_turnkey_preview.html`
+- [x] Verificar y documentar los resultados en `walkthrough.md`

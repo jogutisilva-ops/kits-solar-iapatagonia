@@ -1,81 +1,69 @@
-# Plan de Implementación: CRM en Google Sheets y Automatización con Apps Script
+# Plan de Implementación: Cotizador Turnkey con Envío de Correo y Ofuscación de Costos
 
-Este plan describe la creación de la estructura del CRM en Google Sheets y el código de Google Apps Script para automatizar las tareas de seguimiento, agendar eventos en el calendario, crear carpetas en Google Drive y activar alertas. Todo el sistema estará configurado en **Español (Chile)**.
-
-## Revisión del Usuario Requerida
-
-Por favor, revisa la estructura propuesta y la lógica del script antes de comenzar la implementación.
-
-> [!IMPORTANT]
-> La automatización se ejecutará completamente dentro de tu cuenta de Google. Te proporcionaremos un código listo para copiar y pegar, por lo que no es necesario que compartas tus contraseñas ni credenciales de API de Google con la IA.
-
-## Cambios Propuestos
-
-Crearemos dos nuevos archivos dentro de tu espacio de trabajo:
-1. **[crm_setup_guide.md](file:///Users/josegutisilva/Documents/Antigravity/Guti%20Brain%20/crm_setup_guide.md)**: Una guía paso a paso que explica cómo dar formato a la hoja de Google Sheets, agregar los encabezados de las columnas, crear validaciones de datos (listas desplegables) y configurar las reglas de formato condicional.
-2. **[crm_code.js](file:///Users/josegutisilva/Documents/Antigravity/Guti%20Brain%20/crm_code.js)**: El código completo de Google Apps Script que incluye funciones para:
-   - Detectar cambios en la hoja (por ejemplo, cambiar la Etapa a "Visita Técnica Agendada").
-   - Crear eventos en Google Calendar para las visitas técnicas.
-   - Crear automáticamente una estructura de carpetas en Google Drive para los clientes ganados.
-   - Analizar la hoja diariamente para enviar un correo de resumen con las tareas de seguimiento atrasadas.
+Este plan describe la refactorización de `index_turnkey_preview.html` para cumplir con las especificaciones comerciales de IA Patagonia:
+1.  **UI Simplificada**: Mostrar únicamente Paneles, Inversores y Baterías en la tabla web. Ocultar cables, rieles, tableros, MDO, flete, ingeniería y trámites.
+2.  **Ofuscación Total de Márgenes**: Eliminar el slider de margen de la interfaz. El 25% de margen se calculará internamente.
+3.  **MDO Automatizado**: Calcular la mano de obra en el motor interno multiplicando la potencia del inversor (kW) por la tarifa base de venta ($241.598 neto).
+4.  **Captura de Leads y Simulación de Email**: Añadir un campo de correo electrónico. Al presionar "Enviar Cotización", se abrirá un modal premium que simula el envío y despliega una **Vista Previa del Correo Electrónico formal en formato HTML** con la identidad de marca de IA Patagonia, el cual sí incluye el desglose completo de las 4 secciones (equipos, estructuras, protecciones y servicios).
 
 ---
 
-### Detalles de Configuración del CRM (en Español)
+## 1. Diseño de Interfaz de Usuario (UI)
 
-#### Estructura de Columnas
-Documentaremos el diseño de la hoja en la guía utilizando las siguientes columnas:
-* **Col A:** ID de Lead
-* **Col B:** Fecha de Ingreso
-* **Col C:** Nombre del Cliente
-* **Col D:** Teléfono (con fórmula de enlace a WhatsApp)
-* **Col E:** Correo Electrónico
-* **Col F:** Ciudad / Localidad (clave para calcular logística en el sur)
-* **Col G:** Origen del Lead (Lista Desplegable: *Publicidad Facebook, Publicidad Google, Referido, Sitio Web, Orgánico*)
-* **Col H:** Tipo de Sistema (Lista Desplegable: *Híbrido, On-Grid*)
-* **Col I:** Selección de Kit (Lista Desplegable: *Kit 3kW, Kit 5kW, Kit 8kW, Kit 10kW*)
-* **Col J:** Boleta Eléctrica Promedio (CLP)
-* **Col K:** Etapa Actual (Lista Desplegable):
-  1. `1. Lead Nuevo`
-  2. `2. Contactado`
-  3. `3. Visita Técnica Agendada`
-  4. `4. Propuesta Enviada`
-  5. `5. En Negociación`
-  6. `6. Cerrado Ganado (Instalando)`
-  7. `7. Cerrado Ganado (Conectado)`
-  8. `8. Cerrado Perdido`
-* **Col L:** Motivo de Pérdida (Lista Desplegable: *Precio, Sin Espacio en Techumbre, Red Inestable, Sin Respuesta, Competencia, Otro*)
-* **Col M:** Fecha de Último Contacto
-* **Col N:** Siguiente Acción (Lista Desplegable: *Llamar, Enviar Correo, Agendar Visita, Enviar Cotización, Seguimiento de Propuesta*)
-* **Col O:** Fecha de Siguiente Acción
-* **Col P:** Estado de Alerta (Fórmula: *ATRASADO / HOY / FUTURO / COMPLETADO*)
-* **Col Q:** Valor de Cotización (CLP)
+### Controles de Entrada (Columna Izquierda)
+*   **Selectores de Equipos**: Marca, Tipo de Inversor, Modelo, Cantidad, Baterías, Cantidad de Baterías, Modelo de Panel, Cantidad de Paneles.
+*   **Configuración del Servicio (Simplificado)**:
+    *   *Tipo de Montaje*: Selector entre `Sobre Techo` y `Sobre Suelo`.
+    *   *Ubicación del Proyecto*: Selector desplegable (Dropdown) con comunas del sur (Puerto Montt, Puerto Varas, Calbuco, Frutillar, Osorno, Ancud, Castro, Valdivia).
+*   **Captura de Correo**:
+    *   Un input de texto para el email del cliente (`calc-client-email`).
+    *   Botón de llamada a la acción: `Enviar Cotización por Email` (`btn-send-quote`).
 
-#### Fórmulas de Google Sheets en Español (Usando punto y coma `;` como separador de argumentos)
-* **Enlace de WhatsApp:** `=HIPERVINCULO("https://wa.me/" & C2; "Conversar por WhatsApp")`
-* **Estado de Alerta:** `=SI.CONJUNTO(K2="8. Cerrado Perdido"; "⚪ CERRADO"; K2="7. Cerrado Ganado (Conectado)"; "🟢 EN VIVO"; O2 < HOY(); "🔴 ATRASADO"; O2 = HOY(); "🟡 HOY"; O2 > HOY(); "🔵 FUTURO"; VERDADERO; "⚪ SIN ACCIÓN")`
+### Resultados de la Cotización (Columna Derecha)
+*   **Tabla del Cotizador**: Solo listará un máximo de 3 filas si corresponden:
+    1.  Inversor (Marca, Modelo y Cantidad).
+    2.  Panel Solar (Modelo y Cantidad).
+    3.  Batería Litio (si se selecciona cantidad > 0).
+*   **Bloque Financiero**:
+    *   **Neto**: La suma de *todos* los costos del proyecto con margen (incluyendo flete, MDO, tableros, cables, SEC y apoyos de hormigón).
+    *   **IVA (19%)**: Calculado sobre el neto total consolidado.
+    *   **Total con IVA**: Valor final de venta al público.
 
 ---
 
-### Funciones de Google Apps Script
+## 2. Motor de Cálculo Interno (Javascript)
 
-El archivo `crm_code.js` contendrá las siguientes automatizaciones principales:
-1. **`onEditTrigger(e)`** (Gatillador al editar la hoja):
-   - Si la Etapa (Col K) cambia a `3. Visita Técnica Agendada`, lee la fecha/hora de la visita técnica de la fila y crea un evento en tu Google Calendar.
-   - Si cambia a `6. Cerrado Ganado (Instalando)`, verifica si existe la carpeta principal `Clientes Solar - IA Patagonia` en Google Drive y crea una subcarpeta con el nombre `[Nombre Cliente] - [ID de Lead]`, la cual contendrá tres subcarpetas internas: `/Documentos`, `/Fotos_Terreno` y `/SEC_Netbilling`.
-2. **`enviarCorreosSeguimientoDiario()`** (Ejecución diaria programada):
-   - Analiza la hoja una vez al día buscando filas donde el Estado de Alerta sea `🔴 ATRASADO`.
-   - Envía un correo electrónico resumen al administrador detallando los leads que requieren contacto urgente.
+*   **MDO**: Calculado dinámicamente como:
+    \[
+    \text{MDO Venta} = \text{Potencia Inversor (kW)} \times \text{Cantidad de Inversores} \times \$241.598
+    \]
+*   **Flete**: Se calcula automáticamente según la comuna seleccionada:
+    *   *Puerto Montt / Puerto Varas*: $50.000 costo ($62.500 venta).
+    *   *Calbuco / Frutillar / Llanquihue*: 50 km ($88.761 venta).
+    *   *Osorno / Ancud*: 110 km ($160.023 venta).
+    *   *Castro*: 170 km ($233.171 venta).
+    *   *Valdivia*: 220 km ($294.118 venta).
+*   **Apoyos de Hormigón**: 2 unidades por panel (solo si el tipo de montaje es "Sobre Suelo") a `$17.188` venta c/u.
+*   **Cables y Protecciones**: Se calculan en segundo plano al precio de venta neto correspondiente (costo × 1.25).
 
 ---
 
-## Plan de Verificación
+## 3. Simulador de Envío y Vista Previa del Email (Modal HTML)
 
-### Verificación Manual
-1. Crear una nueva hoja de Google Sheets.
-2. Configurar las columnas y listas desplegables tal como se detalla en la guía.
-3. Abrir *Extensiones > Apps Script*, copiar y pegar el código de `crm_code.js` y guardar.
-4. Configurar el activador de edición (trigger onEdit) para la función `onEditTrigger`.
-5. Cambiar el estado de un lead a `3. Visita Técnica Agendada` y verificar que el evento se cree en Google Calendar.
-6. Cambiar el estado a `6. Cerrado Ganado (Instalando)` y verificar la creación de carpetas en Google Drive.
-7. Ejecutar manualmente la función de correo diario para comprobar la correcta recepción del resumen.
+Al hacer clic en "Enviar Cotización por Email":
+1.  Se validará que el correo ingresado sea válido.
+2.  Se mostrará un modal de éxito estilizado ("¡Cotización Enviada!").
+3.  El modal contendrá una pestaña interactiva para **"Ver Vista Previa del Correo Recibido"**.
+4.  Esta vista previa renderizará un correo electrónico con:
+    *   **Logotipo e Identidad Visual de IA Patagonia** (colores gris oscuro, amarillo y celeste).
+    *   **Datos del Cliente y N° de Cotización** auto-generados.
+    *   **La Tabla de Desglose Completa de Materiales y Servicios (23 filas del Excel)** organizada por secciones, mostrando las cantidades y precios unitarios.
+    *   **Resumen de Totales y Condiciones Comerciales** (forma de pago, plazos).
+
+---
+
+## 4. Plan de Verificación
+
+*   **Validación de Ocultamiento**: Inspeccionar la tabla de la página y confirmar que no aparecen cables, protecciones, mano de obra ni flete en la tabla web del cotizador.
+*   **Validación del Envío**: Ingresar un correo y presionar el botón de envío. Verificar que se despliega el modal de confirmación y que el diseño del correo de vista previa coincide con el formato oficial de cotización del cliente en Valdivia.
+*   **Verificación del Cálculo MDO**: Cambiar el inversor (ej. de 3kW a 6kW) y verificar que en el desglose del correo la Mano de Obra se reajuste proporcionalmente.
