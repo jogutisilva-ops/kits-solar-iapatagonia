@@ -1587,6 +1587,8 @@
                                 <i class="fa-solid fa-envelope" style="color: var(--brand-celeste);"></i> Recibe la Cotización Completa:
                             </label>
                             <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                                <input type="text" id="calc-client-name" placeholder="Tu Nombre Completo" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none; width: 100%;">
+                                <input type="tel" id="calc-client-phone" placeholder="Tu Teléfono (ej: +56912345678)" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none; width: 100%;">
                                 <input type="email" id="calc-client-email" placeholder="ejemplo@correo.com" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none; width: 100%;">
                                 <button id="btn-send-quote" onclick="sendQuoteByEmail()" style="width: 100%; background: var(--brand-amarillo); color: #171717; border: none; padding: 0.8rem; border-radius: 12px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(230, 226, 71, 0.25);">
                                     <i class="fa-solid fa-paper-plane"></i> Enviar Cotización Detallada
@@ -2140,6 +2142,19 @@
                             <span class="node-label">Baterías</span>
                         </div>
                     </div>
+                </div>
+
+                <!-- Solicitar Cotizacion por Email en Kits Estándar -->
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 20px; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; border-top: 1px solid var(--card-border); padding-top: 1.2rem; margin-top: 0.5rem;">
+                    <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--brand-celeste); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.4rem;">
+                        <i class="fa-solid fa-envelope"></i> Recibe esta Cotización por Email:
+                    </h3>
+                    <input type="text" id="modal-client-name" placeholder="Tu Nombre Completo" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none; width: 100%;">
+                    <input type="tel" id="modal-client-phone" placeholder="Tu Teléfono (ej: +56912345678)" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none; width: 100%;">
+                    <input type="email" id="modal-client-email" placeholder="ejemplo@correo.com" style="background: #2d2d2d; color: white; border: 1px solid var(--card-border); padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.9rem; outline: none; width: 100%;">
+                    <button id="btn-modal-send-quote" onclick="sendModalQuoteByEmail()" style="width: 100%; background: var(--brand-amarillo); color: #171717; border: none; padding: 0.8rem; border-radius: 12px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 15px rgba(230, 226, 71, 0.25);">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar Cotización Detallada
+                    </button>
                 </div>
             </div>
         </div>
@@ -3557,9 +3572,21 @@
 
         // Email preview trigger
         function sendQuoteByEmail() {
+            const nameInput = document.getElementById('calc-client-name');
+            const name = nameInput ? nameInput.value.trim() : '';
+            const phoneInput = document.getElementById('calc-client-phone');
+            const phone = phoneInput ? phoneInput.value.trim() : '';
             const emailInput = document.getElementById('calc-client-email');
             const email = emailInput ? emailInput.value.trim() : '';
             
+            if (!name) {
+                alert('Por favor, ingresa tu nombre completo.');
+                return;
+            }
+            if (!phone) {
+                alert('Por favor, ingresa tu número de teléfono.');
+                return;
+            }
             if (!email || !email.includes('@')) {
                 alert('Por favor, ingresa un correo electrónico válido.');
                 return;
@@ -3781,10 +3808,26 @@
             `;
         }
 
+        let activeKitData = null;
+        let activeKitBrand = '';
+        let activeKitType = '';
+
         // Open Dialog Modal with Kit details
         function openDetails(brand, type, name) {
             const kit = KITS_DATA.detailed[brand][type].find(k => k.name === name);
             if (!kit) return;
+
+            activeKitData = kit;
+            activeKitBrand = brand;
+            activeKitType = type;
+
+            // Clear inputs in modal
+            const nameInput = document.getElementById('modal-client-name');
+            if (nameInput) nameInput.value = '';
+            const phoneInput = document.getElementById('modal-client-phone');
+            if (phoneInput) phoneInput.value = '';
+            const emailInput = document.getElementById('modal-client-email');
+            if (emailInput) emailInput.value = '';
 
             document.getElementById('modal-kit-name').innerText = kit.name;
             const categoryBadge = document.getElementById('modal-kit-badge');
@@ -3853,6 +3896,208 @@
         function closeModal() {
             const modal = document.getElementById('details-modal');
             modal.close();
+        }
+
+        function generateModalEmailHtml(destEmail, offerCode, brand, type, kit) {
+            // Build BOM table rows grouped by Section
+            const sections = {
+                "1": { title: "1. EQUIPOS FOTOVOLTAICOS PRINCIPALES", items: [] },
+                "2": { title: "2. ESTRUCTURA Y CABLEADO", items: [] },
+                "3": { title: "3. TABLEROS Y PROTECCIONES ELÉCTRICAS", items: [] },
+                "4": { title: "4. INGENIERÍA, INSTALACIÓN Y SERVICIOS", items: [] }
+            };
+
+            kit.items.forEach(item => {
+                let secKey = "1";
+                const desc = (item.descripcion || '').toLowerCase();
+                
+                if (desc.includes("inversor") || desc.includes("sun2000") || desc.includes("gw") || desc.includes("bateria") || desc.includes("batería") || desc.includes("luna2000") || desc.includes("lynx") || desc.includes("lx a5")) {
+                    secKey = "1";
+                } else if (desc.includes("riel") || desc.includes("fijación") || desc.includes("bracket") || desc.includes("copla") || desc.includes("clams") || desc.includes("cable") || desc.includes("mc4") || desc.includes("panel") || desc.includes("modulo") || desc.includes("módulo") || desc.includes("trina") || desc.includes("ja solar")) {
+                    secKey = "2";
+                } else if (desc.includes("protección") || desc.includes("tablero") || desc.includes("gabinete") || desc.includes("dps") || desc.includes("fusible") || desc.includes("diferencial") || desc.includes("it ") || desc.includes("interruptor") || desc.includes("puesta a tierra") || desc.includes("jabalina")) {
+                    secKey = "3";
+                } else if (desc.includes("servicio") || desc.includes("ingeniería") || desc.includes("trámite") || desc.includes("sec") || desc.includes("te4") || desc.includes("mano de obra") || desc.includes("comisionamiento") || desc.includes("flete") || desc.includes("instalación")) {
+                    secKey = "4";
+                }
+
+                sections[secKey].items.push(item);
+            });
+
+            let tableRowsHtml = '';
+            for (const key in sections) {
+                const sec = sections[key];
+                if (sec.items.length === 0) continue;
+
+                // Section Header row
+                tableRowsHtml += `
+                    <tr class="section-header">
+                        <td colspan="5" style="background-color: #f1f5f9; color: #0f172a; font-weight: 700; font-size: 0.85rem; padding: 10px 12px; border: 1px solid #cbd5e1;">${sec.title}</td>
+                    </tr>
+                `;
+
+                // Item rows
+                sec.items.forEach(item => {
+                    tableRowsHtml += `
+                        <tr>
+                            <td style="padding: 8px 12px; border: 1px solid #cbd5e1;"><code>${item.codigo || '-'}</code></td>
+                            <td style="padding: 8px 12px; border: 1px solid #cbd5e1;">${item.descripcion}</td>
+                            <td style="text-align: center; padding: 8px 12px; border: 1px solid #cbd5e1;">${item.cantidad}</td>
+                            <td style="text-align: right; padding: 8px 12px; border: 1px solid #cbd5e1;">${formatCLP(item.precio_unitario)}</td>
+                            <td style="text-align: right; font-weight: bold; color: #0f172a; padding: 8px 12px; border: 1px solid #cbd5e1;">${formatCLP(item.total)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const panel = kit.items.find(i => (i.descripcion || '').toLowerCase().includes('panel') || (i.descripcion || '').toLowerCase().includes('modulo') || (i.descripcion || '').toLowerCase().includes('módulo'));
+            const panelQty = panel ? panel.cantidad : 0;
+            const powerKWp = (panelQty * 715) / 1000;
+            const inv = kit.items.find(i => (i.descripcion || '').toLowerCase().includes('inversor') || (i.descripcion || '').toLowerCase().includes('sun2000') || (i.descripcion || '').toLowerCase().includes('gw'));
+            const invModel = inv ? inv.codigo || inv.descripcion : '';
+
+            return `
+                <div style="font-family: 'Inter', Arial, sans-serif; max-width: 650px; margin: 0 auto; color: #334155; line-height: 1.6;">
+                    <!-- Email Header Logo Banner -->
+                    <div style="background-color: #171717; padding: 25px; text-align: center; border-radius: 8px 8px 0 0;">
+                        <span style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800; color: #e6e247; letter-spacing: -1px;">IA</span>
+                        <span style="font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 600; color: #52afe3; letter-spacing: -0.5px;">Patagonia</span>
+                        <div style="color: #a3a3a3; font-size: 0.75rem; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;">Ingeniería y Proyectos Solares</div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div style="padding: 30px 20px; background-color: #ffffff;">
+                        <h2 style="color: #0f172a; font-size: 1.3rem; font-weight: 700; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Presupuesto de Equipamiento Solar (Kit Estándar)</h2>
+                        
+                        <p style="margin-bottom: 20px;">Estimado cliente (<strong>${destEmail}</strong>),</p>
+                        
+                        <p style="margin-bottom: 20px;">Agradecemos su interés en nuestras soluciones solares. En respuesta a su solicitud, adjuntamos la propuesta económica detallada para la compra de un kit de equipamiento solar fotovoltaico:</p>
+                        
+                        <!-- Brief Specs Table -->
+                        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 25px;">
+                            <table style="width: 100%; font-size: 0.85rem; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 4px 0; color: #64748b; width: 40%;"><strong>Nº de Oferta:</strong></td>
+                                    <td style="padding: 4px 0; color: #0f172a;"><strong>${offerCode}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 0; color: #64748b;"><strong>Modalidad:</strong></td>
+                                    <td style="padding: 4px 0; color: #0f172a;">Solo Suministro de Equipamiento (Kit Estándar)</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 0; color: #64748b;"><strong>Nombre del Kit:</strong></td>
+                                    <td style="padding: 4px 0; color: #0f172a;">${kit.name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 0; color: #64748b;"><strong>Potencia Inversor:</strong></td>
+                                    <td style="padding: 4px 0; color: #0f172a;">${getInverterPower(invModel)} kW (${brand})</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 0; color: #64748b;"><strong>Potencia Fotovoltaica:</strong></td>
+                                    <td style="padding: 4px 0; color: #0f172a;">${powerKWp.toFixed(2)} kWp (${panelQty} paneles Trina/JA 715Wp)</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h3 style="color: #0f172a; font-size: 1rem; font-weight: 700; margin-top: 25px; margin-bottom: 10px;">📋 Detalle de la Cotización (Lista de Materiales)</h3>
+                        
+                        <!-- Large BOM table -->
+                        <div style="overflow-x: auto;">
+                            <table class="email-table" style="width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 15px 0; border: 1px solid #cbd5e1; color: #333333;">
+                                <thead>
+                                    <tr style="background-color: #f1f5f9; color: #0f172a;">
+                                        <th style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: left;">Código</th>
+                                        <th style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: left;">Descripción del Componente</th>
+                                        <th style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: center; width: 60px;">Cant.</th>
+                                        <th style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: right; width: 90px;">P. Unitario</th>
+                                        <th style="padding: 8px 12px; border: 1px solid #cbd5e1; text-align: right; width: 100px;">Total Neto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${tableRowsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Financial Summary Box -->
+                        <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; margin-top: 25px; max-width: 300px; margin-left: auto;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; color: #64748b;">
+                                <span>Total Neto:</span>
+                                <span>${formatCLP(kit.financials.neto)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; color: #64748b;">
+                                <span>IVA (19%):</span>
+                                <span>${formatCLP(kit.financials.iva)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 1rem; font-weight: bold; border-top: 2px solid #e2e8f0; padding-top: 8px; color: #0f172a;">
+                                <span>Total Público:</span>
+                                <span>${formatCLP(kit.financials.total)}</span>
+                            </div>
+                        </div>
+
+                        <!-- Conditions -->
+                        <h3 style="color: #0f172a; font-size: 0.95rem; font-weight: 700; margin-top: 30px; margin-bottom: 10px;">📄 Condiciones Comerciales (Solo Suministro)</h3>
+                        <ul style="padding-left: 20px; font-size: 0.8rem; line-height: 1.5; margin-bottom: 25px;">
+                            <li style="margin-bottom: 5px;"><strong>Validez de la oferta:</strong> 30 días a partir de la fecha de emisión.</li>
+                            <li style="margin-bottom: 5px;"><strong>Forma de pago:</strong> 100% al momento del retiro de los equipos o antes del despacho.</li>
+                            <li style="margin-bottom: 5px;"><strong>Plazo de entrega:</strong> Sujeto a stock disponible al momento de la orden de compra.</li>
+                            <li style="margin-bottom: 5px;"><strong>Garantía:</strong> Aplica garantía de fábrica de cada component (inversor, paneles, baterías). No incluye garantía de instalación.</li>
+                        </ul>
+
+                        <div style="background-color: #f1f5f9; border-radius: 8px; padding: 15px; font-size: 0.75rem; text-align: center; margin-top: 30px; color: #64748b;">
+                            <strong>IAPATAGONIA SpA</strong><br>
+                            RUT 77.406.457-5  ·  C. Pedro Lagos MZ1 C12, René Schneider, Puerto Montt<br>
+                            Contacto: <a href="mailto:contacto@iapatagonia.cl" style="color: #52afe3; text-decoration: none;">contacto@iapatagonia.cl</a>  ·  Banco Santander N° 93390253
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function sendModalQuoteByEmail() {
+            if (!activeKitData) {
+                alert('No hay ningún kit activo para cotizar.');
+                return;
+            }
+
+            const nameInput = document.getElementById('modal-client-name');
+            const name = nameInput ? nameInput.value.trim() : '';
+            const phoneInput = document.getElementById('modal-client-phone');
+            const phone = phoneInput ? phoneInput.value.trim() : '';
+            const emailInput = document.getElementById('modal-client-email');
+            const email = emailInput ? emailInput.value.trim() : '';
+            
+            if (!name) {
+                alert('Por favor, ingresa tu nombre completo.');
+                return;
+            }
+            if (!phone) {
+                alert('Por favor, ingresa tu número de teléfono.');
+                return;
+            }
+            if (!email || !email.includes('@')) {
+                alert('Por favor, ingresa un correo electrónico válido.');
+                return;
+            }
+
+            // Random offer number generator
+            const dateStr = new Date().toISOString().substring(2, 10).replace(/-/g, "");
+            const randomId = Math.floor(100 + Math.random() * 900);
+            const offerCode = `${dateStr}IAP${randomId}`;
+
+            // Compile the HTML email template
+            const emailHtml = generateModalEmailHtml(email, offerCode, activeKitBrand, activeKitType, activeKitData);
+
+            // Populate the modal fields
+            document.getElementById('preview-email-dest').innerText = email;
+            document.getElementById('email-header-to').innerText = email;
+            document.getElementById('email-header-offer').innerText = offerCode;
+            document.getElementById('email-body-content').innerHTML = emailHtml;
+
+            // Close details modal and open preview modal
+            closeModal();
+            const modal = document.getElementById('email-preview-modal');
+            modal.showModal();
         }
     </script>
 </body>

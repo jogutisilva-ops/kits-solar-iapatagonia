@@ -994,7 +994,9 @@ function doPost(e) {
       sheet.getRange(targetRow, COL.ESTADO_ALERTA).setFormula(formulaAlerta);
       
       // Enviar correo real
-      const subject = `Cotización Formal - Proyecto Solar Fotovoltaico Llave en Mano - Oferta N° ${data.offerCode || ""}`;
+      const isTurnkey = data.projectMode === 'TURNKEY';
+      const subjectType = isTurnkey ? "Proyecto Solar Fotovoltaico Llave en Mano" : "Suministro de Equipamiento Solar";
+      const subject = `Cotización Formal - ${subjectType} - Oferta N° ${data.offerCode || ""}`;
       const mailOptions = {
         htmlBody: data.emailHtml,
         name: "IA Patagonia"
