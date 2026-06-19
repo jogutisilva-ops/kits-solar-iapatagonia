@@ -1007,6 +1007,10 @@ function doPost(e) {
         mailOptions.bcc = CONFIG.EMAIL_NOTIFICACIONES; // BCC al admin
       }
       
+      if (!email || email.indexOf("@") === -1) {
+        throw new Error("El correo electrónico del destinatario no es válido o está vacío: " + email);
+      }
+      
       MailApp.sendEmail(email, subject, "", mailOptions);
       
       const responseObj = {
