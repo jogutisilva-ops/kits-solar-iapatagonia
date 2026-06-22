@@ -823,8 +823,11 @@ function procesarImportacionJSON(jsonString) {
       return "No se importaron nuevos registros. Todos los leads del JSON ya existen en el CRM.";
     }
     
-    // Escribir datos básicos en bloque al final de la hoja
+    // Limpiar validaciones previas en las filas de destino
     const rangeData = sheet.getRange(ultimaFilaReal + 1, 1, filasNuevas.length, COL.ID_EVENTO);
+    rangeData.clearDataValidations();
+    
+    // Escribir datos básicos en bloque al final de la hoja
     rangeData.setValues(filasNuevas);
     
     // Escribir fórmulas en bloque
@@ -955,6 +958,9 @@ function doPost(e) {
       row.push(totalQuote); // Col S: Valor Cotización
       row.push(`Cotización web formalizada. Oferta N° ${data.offerCode || ""}. Dirección: ${direccion}. Distancia flete: ${data.distance || 0} km.`); // Col T: Observaciones
       row.push(""); // Col U: ID Evento Calendar
+      
+      // Limpiar validaciones previas en la fila de destino antes de escribir los nuevos datos
+      sheet.getRange(targetRow, 1, 1, row.length).clearDataValidations();
       
       // Escribir fila en la hoja
       sheet.getRange(targetRow, 1, 1, row.length).setValues([row]);
