@@ -1,8 +1,11 @@
-# Lista de Tareas: Cotizador Turnkey con Envío de Correo y Ofuscación de Costos
+# Lista de Tareas: Corrección de Precios del Cotizador
 
-- [x] Modificar la lógica de generación del HTML en `generate_turnkey_preview.py` para aplicar las nuevas reglas de negocio
-- [x] Ocultar de la UI del cotizador los ítems que no sean inversores, paneles o baterías
-- [x] Reemplazar controles de Margen y MDO por lógica interna, y el slider de flete por un selector de comunas
+- [x] Actualizar base de datos de precios en scripts de generación/inyección
+- [x] Actualizar base de datos de precios y mapeos de inyectores en `inject_pricing.py`
+- [x] Ejecutar `parse_kits_details.py` para asegurar que `parsed_kits.json` esté al día
+- [x] Ejecutar `inject_pricing.py` para actualizar `index.html` e `index_turnkey_preview.html` preservando cambios previos
+- [x] Ejecutar script de verificación para validar que los precios generados coincidan exactamente con la planilla Excel
+- [x] Subir cambios y verificar visualmente en el cotizador
 - [x] Añadir campo de entrada de email y botón de solicitud de cotización
 - [x] Diseñar el modal premium con la pestaña interactiva para ver la vista previa del correo HTML (marca IA Patagonia)
 - [x] Compilar y generar `index_turnkey_preview.html`

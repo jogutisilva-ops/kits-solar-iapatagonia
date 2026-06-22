@@ -59,3 +59,33 @@ Abre el archivo local `index_turnkey_preview.html` y sigue estos pasos:
 4.  Ingresa un correo (ej. `claudio.pavez@correo.com`) y haz clic en **Enviar Cotización Detallada**:
     *   Se desplegará el modal de confirmación con la simulación del correo.
     *   Verifica que en la sección **Condiciones Comerciales** del correo aparezca destacada la nueva **"Nota de Prefactibilidad y Visita Técnica"** con la redacción técnica mejorada.
+
+---
+
+## 3. Corrección de Precios del Cotizador (Ítem por Ítem)
+
+Hemos corregido los precios de equipamiento en las bases de datos de `index.html` e `index_turnkey_preview.html` para asegurar coincidencia del 100% con la planilla de costos de IA Patagonia.
+
+### Resumen de Ajustes Clave (Costo vs. Precio Público Neto):
+*   **Batería Huawei LUNA2000 5kWh (`LUNA2000-5-E0`)**:
+    *   **Costo Turnkey**: `$1.656.177` (corregido de `$2.070.221`)
+    *   **P. Catálogo Retail Neto**: `$2.004.113` (corregido de `$2.505.141`)
+*   **Controlador de Potencia Huawei LUNA (`LUNA2000-5KW-C0`)**:
+    *   **Costo Turnkey**: `$625.000` (corregido de `$781.250`)
+    *   **P. Catálogo Retail Neto**: `$756.303` (corregido de `$945.378`)
+*   **Inversor Híbrido Huawei 4kW (`SUN2000-4KTL-L1`)**:
+    *   **Costo Turnkey**: `$526.000` (corregido de `$657.500`)
+    *   **P. Catálogo Retail Neto**: `$636.504` (corregido de `$795.630`)
+*   **Inversor Híbrido GoodWe 5kW (`GW5000-ES-20`)**:
+    *   **Costo Turnkey**: `$897.260` (corregido de `$1.061.024`)
+    *   **P. Catálogo Retail Neto**: `$1.085.760` (corregido de `$1.283.928`)
+*   **Inversor Híbrido GoodWe 6kW (`GW6000-ES-20`)**:
+    *   **Costo Turnkey**: `$966.336` (corregido de `$1.130.101`)
+    *   **P. Catálogo Retail Neto**: `$1.169.348` (corregido de `$1.367.517`)
+*   **Smart Meter Monofásico GoodWe (`GoodWe-GMK110`)**:
+    *   **Costo Turnkey**: `$52.706` (corregido de `$80.000`)
+    *   **P. Catálogo Retail Neto**: `$63.779` (corregido de `$96.807`)
+*   **Smart Dongle WLAN/FE Huawei (`SDongleA-05`)**:
+    *   **Costo Turnkey**: `$63.044` (corregido de `$78.805`)
+    *   **P. Catálogo Retail Neto**: `$76.289` (corregido de `$95.361`)
+
