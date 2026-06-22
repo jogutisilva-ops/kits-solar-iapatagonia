@@ -150,7 +150,7 @@ function inicializarCRMCompleto() {
   configurarDesplegable(sheet, COL.ORIGEN, LISTAS.ORIGEN, filas);
   configurarDesplegable(sheet, COL.VENDEDOR, LISTAS.VENDEDOR, filas);
   configurarDesplegable(sheet, COL.SISTEMA, LISTAS.SISTEMA, filas);
-  configurarDesplegable(sheet, COL.KIT, LISTAS.KIT, filas);
+  configurarDesplegable(sheet, COL.KIT, LISTAS.KIT, filas, 2, true); // Permitir personalizado
   configurarDesplegable(sheet, COL.ETAPA, LISTAS.ETAPA, filas);
   configurarDesplegable(sheet, COL.MOTIVO_PERDIDA, LISTAS.MOTIVO_PERDIDA, filas);
   configurarDesplegable(sheet, COL.SIG_ACCION, LISTAS.SIG_ACCION, filas);
@@ -197,11 +197,11 @@ function inicializarCRMCompleto() {
 }
 
 // Auxiliar para configurar desplegables
-function configurarDesplegable(sheet, columna, opciones, filas, filaInicio = 2) {
+function configurarDesplegable(sheet, columna, opciones, filas, filaInicio = 2, permitirPersonalizado = false) {
   const rango = sheet.getRange(filaInicio, columna, filas, 1);
   const regla = SpreadsheetApp.newDataValidation()
     .requireValueInList(opciones, true)
-    .setAllowInvalid(false)
+    .setAllowInvalid(permitirPersonalizado)
     .build();
   rango.setDataValidation(regla);
 }
@@ -835,7 +835,7 @@ function procesarImportacionJSON(jsonString) {
     configurarDesplegable(sheet, COL.ORIGEN, LISTAS.ORIGEN, filasNuevas.length, ultimaFilaReal + 1);
     configurarDesplegable(sheet, COL.VENDEDOR, LISTAS.VENDEDOR, filasNuevas.length, ultimaFilaReal + 1);
     configurarDesplegable(sheet, COL.SISTEMA, LISTAS.SISTEMA, filasNuevas.length, ultimaFilaReal + 1);
-    configurarDesplegable(sheet, COL.KIT, LISTAS.KIT, filasNuevas.length, ultimaFilaReal + 1);
+    configurarDesplegable(sheet, COL.KIT, LISTAS.KIT, filasNuevas.length, ultimaFilaReal + 1, true); // Permitir personalizado
     configurarDesplegable(sheet, COL.ETAPA, LISTAS.ETAPA, filasNuevas.length, ultimaFilaReal + 1);
     configurarDesplegable(sheet, COL.MOTIVO_PERDIDA, LISTAS.MOTIVO_PERDIDA, filasNuevas.length, ultimaFilaReal + 1);
     configurarDesplegable(sheet, COL.SIG_ACCION, LISTAS.SIG_ACCION, filasNuevas.length, ultimaFilaReal + 1);
@@ -963,7 +963,7 @@ function doPost(e) {
       configurarDesplegable(sheet, COL.ORIGEN, LISTAS.ORIGEN, 1, targetRow);
       configurarDesplegable(sheet, COL.VENDEDOR, LISTAS.VENDEDOR, 1, targetRow);
       configurarDesplegable(sheet, COL.SISTEMA, LISTAS.SISTEMA, 1, targetRow);
-      configurarDesplegable(sheet, COL.KIT, LISTAS.KIT, 1, targetRow);
+      configurarDesplegable(sheet, COL.KIT, LISTAS.KIT, 1, targetRow, true); // Permitir personalizado
       configurarDesplegable(sheet, COL.ETAPA, LISTAS.ETAPA, 1, targetRow);
       configurarDesplegable(sheet, COL.MOTIVO_PERDIDA, LISTAS.MOTIVO_PERDIDA, 1, targetRow);
       configurarDesplegable(sheet, COL.SIG_ACCION, LISTAS.SIG_ACCION, 1, targetRow);
