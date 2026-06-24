@@ -2863,7 +2863,7 @@
                 const power = kit.name.replace("GOODWE Kit", "").replace("HUAWEI Kit", "").trim();
 
                 // Find panel and inverter details
-                const panel = kit.items.find(i => i.descripcion && i.descripcion.toLowerCase().includes('panel') || i.descripcion && i.descripcion.toLowerCase().includes('modulo'));
+                const panel = kit.items.find(i => i.descripcion && (i.descripcion.toLowerCase().includes('panel') || i.descripcion.toLowerCase().includes('modulo') || i.descripcion.toLowerCase().includes('trina') || i.descripcion.toLowerCase().includes('ja solar')) || i.codigo && (i.codigo.toLowerCase().includes('tsm') || i.codigo.toLowerCase().includes('jam')));
                 const inverter = kit.items.find(i => i.descripcion && i.descripcion.toLowerCase().includes('inversor') || i.descripcion && i.descripcion.toLowerCase().includes('sun2000') || i.descripcion && i.descripcion.toLowerCase().includes('gw'));
                 const battery = kit.items.find(i => i.descripcion && i.descripcion.toLowerCase().includes('bateria') || i.descripcion && i.descripcion.toLowerCase().includes('luna2000') || i.descripcion && i.descripcion.toLowerCase().includes('lynx') || i.descripcion && i.descripcion.toLowerCase().includes('batería'));
 
@@ -3662,7 +3662,7 @@
                 summaryText += `• *Total Proyecto c/IVA:* ${formatCLP(total)}\n\n`;
             } else {
                 if (!activeKitData) return '';
-                const panel = activeKitData.items.find(i => (i.descripcion || '').toLowerCase().includes('panel') || (i.descripcion || '').toLowerCase().includes('modulo') || (i.descripcion || '').toLowerCase().includes('módulo'));
+                const panel = activeKitData.items.find(i => (i.descripcion || '').toLowerCase().includes('panel') || (i.descripcion || '').toLowerCase().includes('modulo') || (i.descripcion || '').toLowerCase().includes('módulo') || (i.descripcion || '').toLowerCase().includes('trina') || (i.descripcion || '').toLowerCase().includes('ja solar') || (i.codigo || '').toLowerCase().includes('tsm') || (i.codigo || '').toLowerCase().includes('jam'));
                 const panelQty = panel ? panel.cantidad : 0;
                 const powerKWp = (panelQty * 715) / 1000;
                 
@@ -4050,7 +4050,7 @@
                 });
             }
 
-            const panel = kit.items.find(i => (i.descripcion || '').toLowerCase().includes('panel') || (i.descripcion || '').toLowerCase().includes('modulo') || (i.descripcion || '').toLowerCase().includes('módulo'));
+            const panel = kit.items.find(i => (i.descripcion || '').toLowerCase().includes('panel') || (i.descripcion || '').toLowerCase().includes('modulo') || (i.descripcion || '').toLowerCase().includes('módulo') || (i.descripcion || '').toLowerCase().includes('trina') || (i.descripcion || '').toLowerCase().includes('ja solar') || (i.codigo || '').toLowerCase().includes('tsm') || (i.codigo || '').toLowerCase().includes('jam'));
             const panelQty = panel ? panel.cantidad : 0;
             const powerKWp = (panelQty * 715) / 1000;
             const inv = kit.items.find(i => (i.descripcion || '').toLowerCase().includes('inversor') || (i.descripcion || '').toLowerCase().includes('sun2000') || (i.descripcion || '').toLowerCase().includes('gw'));
